@@ -1,0 +1,2 @@
+[tool.vercel.scripts]
+build = "python ml/src/generate_synthetic_dataset.py && python ml/src/train.py"
