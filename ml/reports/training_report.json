@@ -1,0 +1,195 @@
+{
+  "dataset_file": "Indian_Personal_Finance_Behavior_Dataset_2026.csv",
+  "dataset_sha256": "aee0dfb88cf95e8c352f03093a55e1461ced548856874720be912af21380b54e",
+  "rows_used": 1000,
+  "features": [
+    "Age",
+    "Monthly_Income_INR",
+    "Monthly_Expenses_INR",
+    "Savings_Percentage",
+    "Monthly_Debt_Payment_INR",
+    "Financial_Literacy_Score"
+  ],
+  "excluded_fields": [
+    "Respondent_ID",
+    "Risk_Tolerance_Level",
+    "Investment_Type",
+    "Debt_Status",
+    "Has_Health_Insurance",
+    "Has_Life_Insurance",
+    "Has_Emergency_Fund",
+    "Uses_Financial_Apps"
+  ],
+  "data_cleaning": "No records or feature values were changed or removed.",
+  "cluster_selection": {
+    "highest_mean_silhouette_k": 8,
+    "selected_k": 2,
+    "override_used": false,
+    "seeds": [
+      0,
+      17,
+      42,
+      73,
+      101
+    ],
+    "decision": "K=2 is the provisional baseline: it has the strongest seed stability and highest Calinski-Harabasz score. Its silhouette is weak and only 0.012 below the maximum at K=8; no naturally occurring personas are inferred from this synthetic-like dataset.",
+    "selected_k_mean_metrics_across_seeds": {
+      "k": 2.0,
+      "silhouette_mean": 0.1276154301944727,
+      "silhouette_std": 1.550761299507652e-05,
+      "davies_bouldin_mean": 2.5349691886178043,
+      "calinski_harabasz_mean": 148.2282155893043,
+      "inertia_mean": 5224.096822768945,
+      "seed_stability_ari_mean": 0.9912168164464514,
+      "seed_stability_ari_min": 0.9840480478178798
+    }
+  },
+  "final_model_metrics": {
+    "silhouette": 0.12762580924517608,
+    "davies_bouldin": 2.535228855566341,
+    "calinski_harabasz": 148.22954197130872,
+    "pca_explained_variance_ratio": [
+      0.17874493861024704,
+      0.17645726797537925
+    ]
+  },
+  "cluster_profiles": {
+    "0": {
+      "label": "Cluster 0",
+      "count": 484,
+      "share": 0.484,
+      "features_mean": {
+        "Age": 30.198347107438018,
+        "Monthly_Income_INR": 106482.58884297521,
+        "Monthly_Expenses_INR": 84680.17148760331,
+        "Savings_Percentage": 26.880165289256198,
+        "Monthly_Debt_Payment_INR": 22172.45867768595,
+        "Financial_Literacy_Score": 5.5309917355371905
+      },
+      "features_median": {
+        "Age": 30.0,
+        "Monthly_Income_INR": 104043.0,
+        "Monthly_Expenses_INR": 89690.5,
+        "Savings_Percentage": 27.0,
+        "Monthly_Debt_Payment_INR": 20571.0,
+        "Financial_Literacy_Score": 5.0
+      },
+      "external_category_shares": {
+        "Risk_Tolerance_Level": {
+          "Low": 0.4152892561983471,
+          "Medium": 0.3760330578512397,
+          "High": 0.20867768595041322
+        },
+        "Investment_Type": {
+          "Stocks": 0.19008264462809918,
+          "Gold": 0.1756198347107438,
+          "Cryptocurrency": 0.16322314049586778,
+          "Mutual Funds": 0.16115702479338842,
+          "Fixed Deposit": 0.16115702479338842,
+          "None": 0.1487603305785124
+        },
+        "Debt_Status": {
+          "Credit Card Debt": 0.2706611570247934,
+          "Home Loan": 0.26239669421487605,
+          "Personal Loan": 0.23553719008264462,
+          "No Debt": 0.23140495867768596
+        },
+        "Has_Health_Insurance": {
+          "Yes": 0.6632231404958677,
+          "No": 0.3367768595041322
+        },
+        "Has_Life_Insurance": {
+          "Yes": 0.5826446280991735,
+          "No": 0.41735537190082644
+        },
+        "Has_Emergency_Fund": {
+          "Yes": 0.6384297520661157,
+          "No": 0.3615702479338843
+        },
+        "Uses_Financial_Apps": {
+          "Yes": 0.6900826446280992,
+          "No": 0.30991735537190085
+        }
+      }
+    },
+    "1": {
+      "label": "Cluster 1",
+      "count": 516,
+      "share": 0.516,
+      "features_mean": {
+        "Age": 50.0562015503876,
+        "Monthly_Income_INR": 111731.29263565892,
+        "Monthly_Expenses_INR": 75746.73255813954,
+        "Savings_Percentage": 26.680232558139537,
+        "Monthly_Debt_Payment_INR": 25776.850775193798,
+        "Financial_Literacy_Score": 5.496124031007752
+      },
+      "features_median": {
+        "Age": 50.0,
+        "Monthly_Income_INR": 111610.0,
+        "Monthly_Expenses_INR": 75717.5,
+        "Savings_Percentage": 26.0,
+        "Monthly_Debt_Payment_INR": 26012.0,
+        "Financial_Literacy_Score": 5.0
+      },
+      "external_category_shares": {
+        "Risk_Tolerance_Level": {
+          "Low": 0.41472868217054265,
+          "Medium": 0.37209302325581395,
+          "High": 0.2131782945736434
+        },
+        "Investment_Type": {
+          "Stocks": 0.20736434108527133,
+          "Mutual Funds": 0.1744186046511628,
+          "Fixed Deposit": 0.16472868217054262,
+          "None": 0.16085271317829458,
+          "Cryptocurrency": 0.1511627906976744,
+          "Gold": 0.14147286821705427
+        },
+        "Debt_Status": {
+          "No Debt": 0.2713178294573643,
+          "Home Loan": 0.2558139534883721,
+          "Personal Loan": 0.24224806201550386,
+          "Credit Card Debt": 0.23062015503875968
+        },
+        "Has_Health_Insurance": {
+          "Yes": 0.6705426356589147,
+          "No": 0.32945736434108525
+        },
+        "Has_Life_Insurance": {
+          "Yes": 0.5872093023255814,
+          "No": 0.4127906976744186
+        },
+        "Has_Emergency_Fund": {
+          "Yes": 0.622093023255814,
+          "No": 0.37790697674418605
+        },
+        "Uses_Financial_Apps": {
+          "Yes": 0.6686046511627907,
+          "No": 0.3313953488372093
+        }
+      }
+    }
+  },
+  "limitations": [
+    "The dataset provenance and license were not supplied.",
+    "The available numeric fields appear weakly correlated and synthetic-like.",
+    "Cluster metrics describe this dataset and do not establish real-world investor segments.",
+    "Risk tolerance, investment type, debt status, and protection fields are reserved for post-cluster description in this baseline."
+  ],
+  "software_versions": {
+    "python": "3.13.16",
+    "numpy": "2.5.4",
+    "pandas": "3.1.0",
+    "scikit_learn": "1.9.1",
+    "joblib": "1.6.0"
+  },
+  "artifacts": {
+    "pipeline": "ml\\artifacts\\investor_segment_pipeline.joblib",
+    "pca": "ml\\artifacts\\pca_projection.joblib",
+    "profiles": "ml\\artifacts\\cluster_profiles.json",
+    "feature_contract": "ml\\artifacts\\feature_contract.json",
+    "model_selection": "ml\\reports\\model_selection.csv",
+    "assignments": "ml\\data\\processed\\investor_segments.csv"
+  }
+}
