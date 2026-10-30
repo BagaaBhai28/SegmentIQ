@@ -1,2 +1,14 @@
+[project]
+name = "segmentiq"
+version = "0.1.0"
+requires-python = ">=3.13,<3.14"
+dependencies = [
+  "fastapi>=0.115,<1",
+  "joblib>=1.3,<2",
+  "numpy>=1.26,<3",
+  "pandas>=2.1,<4",
+  "scikit-learn>=1.4,<2",
+]
+
 [tool.vercel.scripts]
 build = "python ml/src/generate_synthetic_dataset.py && python ml/src/train.py"
