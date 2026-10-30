@@ -21,4 +21,3 @@ Work proceeds one stage at a time. A stage is marked complete only after its lis
 - No generated SIP, allocation, or experience fields will be used as if they were observed.
 - Dataset source URL/license is unknown. This does not block an explicitly synthetic educational prototype, but it must be resolved before redistribution or claims of empirical validity.
 - The six-numeric-field K=2 result is a diagnostic baseline, not the final segmentation. A mixed financial/behavioral experiment performed worse; see `docs/model_report.md`.
-- SEBI published a 2025 Investor Survey report and respondent-data download. Audit its fields, sampling, missing data, and terms before deciding whether it replaces the supplied CSV for empirical segmentation.

@@ -45,11 +45,20 @@ The follow-up experiment compared the six numeric fields against those same fiel
 
 The mixed representation did not improve separation. Its stable K=2 assignment is not evidence of meaningful segments: silhouette and Davies–Bouldin are substantially worse. The current CSV therefore does not support an investor segmentation claim. Keep K as an evaluated choice, not a target to force; improving the source variables and data quality matters more than choosing K=4 or K=6.
 
-## Recommended data change
+## Synthetic investor-feature experiment
 
-SEBI has published the 2025 Investor Survey report and a separate respondent-data download. This is a stronger candidate source for the next modeling stage because it is specifically about Indian investor behavior. Before replacing the supplied CSV, inspect the downloaded files, data dictionary, sampling structure, missingness, licensing/usage terms, and whether investor and non-investor responses can be analyzed appropriately. Use the respondent data only after that audit; do not assume that the survey's variables or terms match this project's current schema. [SEBI Investor Survey 2025 materials](https://www.sebi.gov.in/reports-and-statistics/research/jan-2026/investor-survey-2025-_99170.html)
+To answer whether adding more investor-style fields raises K, `ml/src/synthetic_feature_experiment.py` creates a separate derived CSV under ignored `ml/data/processed/`. It appends seeded random values for monthly investment amount, investment horizon, investing experience, risk profile, investment goal, preferred asset class, investment frequency, and liquidity need. The original CSV is not changed. These values are explicitly synthetic and must not be interpreted as reported investor behavior.
 
-As a complementary source, MoSPI's NSS 77th-round Debt and Investment survey offers household-level asset and debt information, but is broader household finance rather than securities-investor behavior. [MoSPI/NSSO study metadata](https://microdata.gov.in/NADA/index.php/catalog/156/study-description)
+The experiment compares the original six numeric features with those six plus the eight synthetic fields. Numeric values are standardized and unordered categories are one-hot encoded. The sweep evaluates K=2 through K=8 across five seeds.
+
+| Representation | Silhouette-maximizing K | Best silhouette | Davies–Bouldin-minimizing K | Seed ARI at silhouette-best K |
+|---|---:|---:|---:|---:|
+| Original six numeric | 8 | 0.1398 | 7 | 0.5116 |
+| Original + synthetic investor fields | 2 | 0.0643 | 8 | 0.8882 |
+
+So K does **not** consistently increase: by silhouette it falls from 8 to 2, while the Davies–Bouldin minimum shifts from 7 to 8. Metrics disagree, and the expanded feature set has much weaker silhouette values across the sweep. This shows that adding random fields can move a metric's preferred K without creating meaningful segments. The synthetic experiment is useful for demonstrating the pipeline only; it is not a basis for choosing real investor personas.
+
+The derived dataset is `ml/data/processed/synthetic_investor_features.csv` (ignored by Git), and aggregate results are in `ml/reports/synthetic_feature_experiment.json`.
 
 ## Reproducible commands
 
@@ -60,6 +69,7 @@ From the repository root, after placing the source CSV in the ignored raw-data l
 .\.venv\Scripts\python.exe ml/src/audit_dataset.py
 .\.venv\Scripts\python.exe ml/src/train.py
 .\.venv\Scripts\python.exe ml/src/predict.py --input ml/examples/profile.json
+.\.venv\Scripts\python.exe ml/src/synthetic_feature_experiment.py
 ```
 
 Generated joblib models and row-level assignments are local and ignored by Git. Aggregate model-selection and training reports are kept in `ml/reports/`.
@@ -69,4 +79,5 @@ Generated joblib models and row-level assignments are local and ignored by Git. 
 - Training, model selection, cluster profiles, PCA projection, model artifacts, and inference use the same six-field contract.
 - A local inference smoke check produced a cluster assignment and PCA coordinates from the sample profile.
 - The numeric-vs-mixed feature comparison is saved in `ml/reports/feature_set_comparison.json` and is reproducible from `ml/src/compare_feature_sets.py`.
+- The seeded synthetic feature experiment is reproducible with `ml/src/synthetic_feature_experiment.py`; its row-level output remains local and ignored.
 - The result is an educational demonstration, not a validated financial assessment. Do not name personas from this CSV. Stage 4 should start after choosing and auditing the empirical SEBI respondent file or explicitly retaining a demo-only scope.

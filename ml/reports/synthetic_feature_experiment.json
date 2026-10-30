@@ -1,0 +1,162 @@
+{
+  "experiment": "seeded random synthetic investor features appended to a derived dataset copy",
+  "source_rows": 1000,
+  "seed": 20261031,
+  "synthetic_fields": {
+    "numeric": [
+      "Synthetic_Monthly_Investment_INR",
+      "Synthetic_Investment_Horizon_Years",
+      "Synthetic_Investment_Experience_Years"
+    ],
+    "categorical": [
+      "Synthetic_Risk_Profile",
+      "Synthetic_Investment_Goal",
+      "Synthetic_Preferred_Asset_Class",
+      "Synthetic_Investment_Frequency",
+      "Synthetic_Liquidity_Need"
+    ],
+    "generation": "Independent seeded random draws from documented plausible ranges/categories; no synthetic values are actual respondent observations."
+  },
+  "preprocessing": "StandardScaler for numeric features; one-hot encoding for unordered categories",
+  "selection_rule": "No single selected K: report silhouette maximum and Davies-Bouldin minimum separately because metrics can disagree.",
+  "best_k_by_metric": {
+    "silhouette_maximizing_k": {
+      "original_six_numeric": 8,
+      "original_plus_synthetic_investor_fields": 2
+    },
+    "davies_bouldin_minimizing_k": {
+      "original_six_numeric": 7,
+      "original_plus_synthetic_investor_fields": 8
+    }
+  },
+  "scores": [
+    {
+      "representation": "original_six_numeric",
+      "k": 2,
+      "silhouette_mean": 0.1276154301944727,
+      "davies_bouldin_mean": 2.5349691886178043,
+      "calinski_harabasz_mean": 148.2282155893043,
+      "seed_stability_ari_mean": 0.9912168164464514,
+      "seed_stability_ari_min": 0.9840480478178798
+    },
+    {
+      "representation": "original_six_numeric",
+      "k": 3,
+      "silhouette_mean": 0.12038585761179191,
+      "davies_bouldin_mean": 2.1766747271300217,
+      "calinski_harabasz_mean": 134.67631898491192,
+      "seed_stability_ari_mean": 0.5499732249816877,
+      "seed_stability_ari_min": 0.04095390063195334
+    },
+    {
+      "representation": "original_six_numeric",
+      "k": 4,
+      "silhouette_mean": 0.12771882269480525,
+      "davies_bouldin_mean": 1.973479029988238,
+      "calinski_harabasz_mean": 128.68648122439106,
+      "seed_stability_ari_mean": 0.49433878460271546,
+      "seed_stability_ari_min": 0.2776595193027401
+    },
+    {
+      "representation": "original_six_numeric",
+      "k": 5,
+      "silhouette_mean": 0.1294916073047951,
+      "davies_bouldin_mean": 1.816998786041062,
+      "calinski_harabasz_mean": 122.45336892189921,
+      "seed_stability_ari_mean": 0.42060919385350193,
+      "seed_stability_ari_min": 0.27210028029794436
+    },
+    {
+      "representation": "original_six_numeric",
+      "k": 6,
+      "silhouette_mean": 0.1341900601665798,
+      "davies_bouldin_mean": 1.7036693316551392,
+      "calinski_harabasz_mean": 119.3109636678876,
+      "seed_stability_ari_mean": 0.4313037264614182,
+      "seed_stability_ari_min": 0.3214392246917001
+    },
+    {
+      "representation": "original_six_numeric",
+      "k": 7,
+      "silhouette_mean": 0.13946958346343014,
+      "davies_bouldin_mean": 1.6094143904006735,
+      "calinski_harabasz_mean": 116.22708280122683,
+      "seed_stability_ari_mean": 0.4743563653625408,
+      "seed_stability_ari_min": 0.37669611829965904
+    },
+    {
+      "representation": "original_six_numeric",
+      "k": 8,
+      "silhouette_mean": 0.13983844152717312,
+      "davies_bouldin_mean": 1.6174267234470983,
+      "calinski_harabasz_mean": 111.86500157703203,
+      "seed_stability_ari_mean": 0.5116105007599429,
+      "seed_stability_ari_min": 0.3957732371023181
+    },
+    {
+      "representation": "original_plus_synthetic_investor_fields",
+      "k": 2,
+      "silhouette_mean": 0.06427775921809038,
+      "davies_bouldin_mean": 3.732992599046674,
+      "calinski_harabasz_mean": 69.60002065107048,
+      "seed_stability_ari_mean": 0.8881577274780916,
+      "seed_stability_ari_min": 0.8206566588820933
+    },
+    {
+      "representation": "original_plus_synthetic_investor_fields",
+      "k": 3,
+      "silhouette_mean": 0.05889700559763865,
+      "davies_bouldin_mean": 3.309914909397963,
+      "calinski_harabasz_mean": 59.952241757869345,
+      "seed_stability_ari_mean": 0.306283321300789,
+      "seed_stability_ari_min": 0.0915692057511254
+    },
+    {
+      "representation": "original_plus_synthetic_investor_fields",
+      "k": 4,
+      "silhouette_mean": 0.05958099301673225,
+      "davies_bouldin_mean": 2.9615919240205892,
+      "calinski_harabasz_mean": 57.14846809728432,
+      "seed_stability_ari_mean": 0.39763696298166484,
+      "seed_stability_ari_min": 0.19543515469867287
+    },
+    {
+      "representation": "original_plus_synthetic_investor_fields",
+      "k": 5,
+      "silhouette_mean": 0.05823302956274582,
+      "davies_bouldin_mean": 2.7746160561068542,
+      "calinski_harabasz_mean": 53.453096638518126,
+      "seed_stability_ari_mean": 0.39967045705176496,
+      "seed_stability_ari_min": 0.22055363790243926
+    },
+    {
+      "representation": "original_plus_synthetic_investor_fields",
+      "k": 6,
+      "silhouette_mean": 0.05907703690377034,
+      "davies_bouldin_mean": 2.6645507996616304,
+      "calinski_harabasz_mean": 50.45236210919212,
+      "seed_stability_ari_mean": 0.3147554359017903,
+      "seed_stability_ari_min": 0.18633725105501703
+    },
+    {
+      "representation": "original_plus_synthetic_investor_fields",
+      "k": 7,
+      "silhouette_mean": 0.059578576837185905,
+      "davies_bouldin_mean": 2.5516178217052805,
+      "calinski_harabasz_mean": 47.50459004264273,
+      "seed_stability_ari_mean": 0.3122109569474763,
+      "seed_stability_ari_min": 0.1915465361993706
+    },
+    {
+      "representation": "original_plus_synthetic_investor_fields",
+      "k": 8,
+      "silhouette_mean": 0.059575073260445796,
+      "davies_bouldin_mean": 2.524748997044196,
+      "calinski_harabasz_mean": 44.93462667625139,
+      "seed_stability_ari_mean": 0.29063892233271815,
+      "seed_stability_ari_min": 0.22578469445986218
+    }
+  ],
+  "derived_dataset_path": "ml\\data\\processed\\synthetic_investor_features.csv",
+  "integrity_note": "Original source file was read only and not modified. Derived row-level data is written beneath ignored ml/data/processed/."
+}

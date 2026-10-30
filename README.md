@@ -53,7 +53,7 @@ The source CSV does not contain Monthly SIP, asset-allocation, or investment-exp
 
 The audit found internal consistency flags in the raw source. The baseline preserves these records and values rather than silently cleaning them. See the [dataset report](docs/dataset_report.md) and [notebook audit](docs/notebook-audit.md).
 
-Model-selection metrics are weak; K=2 is diagnostic only and outputs neutral cluster IDs, not investor personas. A mixed-feature experiment performed worse. SEBI's 2025 Investor Survey respondent data is identified as a candidate for a separate empirical-data audit before further segmentation claims. See the [ML baseline report](docs/model_report.md).
+Model-selection metrics are weak; K=2 is diagnostic only and outputs neutral cluster IDs, not investor personas. Mixed observed categories and a separate seeded synthetic-feature experiment both weakened separation; adding synthetic fields shifted the metric-preferred K in conflicting directions. See the [ML baseline report](docs/model_report.md) for the experiments and limitations.
 
 ## Local setup
 
