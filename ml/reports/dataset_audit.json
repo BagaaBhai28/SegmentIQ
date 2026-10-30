@@ -1,0 +1,291 @@
+{
+  "dataset_file": "Indian_Personal_Finance_Behavior_Dataset_2026.csv",
+  "provenance": {
+    "source_url": null,
+    "license": null,
+    "status": "Not supplied with the CSV; verify before redistribution or real-world claims.",
+    "interpretation": "Numeric distributions appear synthetic-like; this is an observation, not proof of origin."
+  },
+  "shape": {
+    "rows": 1000,
+    "columns": 20
+  },
+  "columns": [
+    "Respondent_ID",
+    "Age",
+    "Gender",
+    "City_Tier",
+    "Employment_Type",
+    "Monthly_Income_INR",
+    "Monthly_Expenses_INR",
+    "Savings_Percentage",
+    "Investment_Type",
+    "Has_Health_Insurance",
+    "Has_Life_Insurance",
+    "Has_Emergency_Fund",
+    "Debt_Status",
+    "Monthly_Debt_Payment_INR",
+    "Financial_Literacy_Score",
+    "Uses_Financial_Apps",
+    "Primary_Financial_Goal",
+    "Risk_Tolerance_Level",
+    "Savings_Channel",
+    "Region"
+  ],
+  "dtypes": {
+    "Respondent_ID": "int64",
+    "Age": "int64",
+    "Gender": "str",
+    "City_Tier": "str",
+    "Employment_Type": "str",
+    "Monthly_Income_INR": "int64",
+    "Monthly_Expenses_INR": "int64",
+    "Savings_Percentage": "int64",
+    "Investment_Type": "str",
+    "Has_Health_Insurance": "str",
+    "Has_Life_Insurance": "str",
+    "Has_Emergency_Fund": "str",
+    "Debt_Status": "str",
+    "Monthly_Debt_Payment_INR": "int64",
+    "Financial_Literacy_Score": "int64",
+    "Uses_Financial_Apps": "str",
+    "Primary_Financial_Goal": "str",
+    "Risk_Tolerance_Level": "str",
+    "Savings_Channel": "str",
+    "Region": "str"
+  },
+  "expected_columns_missing": [],
+  "proposed_features_absent": [
+    "Monthly_SIP",
+    "Equity_Allocation_Pct",
+    "FD_Allocation_Pct",
+    "Debt_Allocation_Pct",
+    "Investment_Experience_Years"
+  ],
+  "blank_values_by_column": {
+    "Respondent_ID": 0,
+    "Age": 0,
+    "Gender": 0,
+    "City_Tier": 0,
+    "Employment_Type": 0,
+    "Monthly_Income_INR": 0,
+    "Monthly_Expenses_INR": 0,
+    "Savings_Percentage": 0,
+    "Investment_Type": 0,
+    "Has_Health_Insurance": 0,
+    "Has_Life_Insurance": 0,
+    "Has_Emergency_Fund": 0,
+    "Debt_Status": 0,
+    "Monthly_Debt_Payment_INR": 0,
+    "Financial_Literacy_Score": 0,
+    "Uses_Financial_Apps": 0,
+    "Primary_Financial_Goal": 0,
+    "Risk_Tolerance_Level": 0,
+    "Savings_Channel": 0,
+    "Region": 0
+  },
+  "literal_none_by_column": {
+    "Respondent_ID": 0,
+    "Age": 0,
+    "Gender": 0,
+    "City_Tier": 0,
+    "Employment_Type": 0,
+    "Monthly_Income_INR": 0,
+    "Monthly_Expenses_INR": 0,
+    "Savings_Percentage": 0,
+    "Investment_Type": 155,
+    "Has_Health_Insurance": 0,
+    "Has_Life_Insurance": 0,
+    "Has_Emergency_Fund": 0,
+    "Debt_Status": 0,
+    "Monthly_Debt_Payment_INR": 0,
+    "Financial_Literacy_Score": 0,
+    "Uses_Financial_Apps": 0,
+    "Primary_Financial_Goal": 0,
+    "Risk_Tolerance_Level": 0,
+    "Savings_Channel": 0,
+    "Region": 0
+  },
+  "duplicate_rows": 0,
+  "respondent_id": {
+    "unique": 1000,
+    "duplicates": 0,
+    "min": 1,
+    "max": 1000
+  },
+  "numeric_summary": {
+    "Age": {
+      "min": 21,
+      "median": 41.0,
+      "mean": 40.445,
+      "max": 59,
+      "skew": -0.08345244266256936
+    },
+    "Monthly_Income_INR": {
+      "min": 15203,
+      "median": 108439.5,
+      "mean": 109190.92,
+      "max": 199844,
+      "skew": -0.017243915141610666
+    },
+    "Monthly_Expenses_INR": {
+      "min": 10060,
+      "median": 81921.5,
+      "mean": 80070.517,
+      "max": 149993,
+      "skew": -0.03550388348679678
+    },
+    "Savings_Percentage": {
+      "min": 5,
+      "median": 26.5,
+      "mean": 26.777,
+      "max": 49,
+      "skew": 0.046100848898747715
+    },
+    "Monthly_Debt_Payment_INR": {
+      "min": 5,
+      "median": 23117.0,
+      "mean": 24032.325,
+      "max": 49979,
+      "skew": 0.12100563792224948
+    },
+    "Financial_Literacy_Score": {
+      "min": 1,
+      "median": 5.0,
+      "mean": 5.513,
+      "max": 10,
+      "skew": 0.032325002821308346
+    }
+  },
+  "numeric_correlations": {
+    "Age": {
+      "Age": 1.0,
+      "Monthly_Income_INR": 0.0106,
+      "Monthly_Expenses_INR": -0.0396,
+      "Savings_Percentage": 0.0054,
+      "Monthly_Debt_Payment_INR": 0.0376,
+      "Financial_Literacy_Score": -0.0271
+    },
+    "Monthly_Income_INR": {
+      "Age": 0.0106,
+      "Monthly_Income_INR": 1.0,
+      "Monthly_Expenses_INR": -0.0039,
+      "Savings_Percentage": -0.0069,
+      "Monthly_Debt_Payment_INR": -0.0124,
+      "Financial_Literacy_Score": 0.0356
+    },
+    "Monthly_Expenses_INR": {
+      "Age": -0.0396,
+      "Monthly_Income_INR": -0.0039,
+      "Monthly_Expenses_INR": 1.0,
+      "Savings_Percentage": -0.0244,
+      "Monthly_Debt_Payment_INR": -0.0114,
+      "Financial_Literacy_Score": 0.0329
+    },
+    "Savings_Percentage": {
+      "Age": 0.0054,
+      "Monthly_Income_INR": -0.0069,
+      "Monthly_Expenses_INR": -0.0244,
+      "Savings_Percentage": 1.0,
+      "Monthly_Debt_Payment_INR": 0.0169,
+      "Financial_Literacy_Score": 0.014
+    },
+    "Monthly_Debt_Payment_INR": {
+      "Age": 0.0376,
+      "Monthly_Income_INR": -0.0124,
+      "Monthly_Expenses_INR": -0.0114,
+      "Savings_Percentage": 0.0169,
+      "Monthly_Debt_Payment_INR": 1.0,
+      "Financial_Literacy_Score": 0.0452
+    },
+    "Financial_Literacy_Score": {
+      "Age": -0.0271,
+      "Monthly_Income_INR": 0.0356,
+      "Monthly_Expenses_INR": 0.0329,
+      "Savings_Percentage": 0.014,
+      "Monthly_Debt_Payment_INR": 0.0452,
+      "Financial_Literacy_Score": 1.0
+    }
+  },
+  "category_counts": {
+    "Gender": {
+      "Female": 478,
+      "Male": 476,
+      "Other": 46
+    },
+    "City_Tier": {
+      "Tier 1": 392,
+      "Tier 2": 354,
+      "Tier 3": 254
+    },
+    "Employment_Type": {
+      "Salaried": 276,
+      "Student": 257,
+      "Self-Employed": 238,
+      "Unemployed": 229
+    },
+    "Investment_Type": {
+      "Stocks": 199,
+      "Mutual Funds": 168,
+      "Fixed Deposit": 163,
+      "Gold": 158,
+      "Cryptocurrency": 157,
+      "None": 155
+    },
+    "Has_Health_Insurance": {
+      "Yes": 667,
+      "No": 333
+    },
+    "Has_Life_Insurance": {
+      "Yes": 585,
+      "No": 415
+    },
+    "Has_Emergency_Fund": {
+      "Yes": 630,
+      "No": 370
+    },
+    "Debt_Status": {
+      "Home Loan": 259,
+      "No Debt": 252,
+      "Credit Card Debt": 250,
+      "Personal Loan": 239
+    },
+    "Uses_Financial_Apps": {
+      "Yes": 679,
+      "No": 321
+    },
+    "Primary_Financial_Goal": {
+      "Education": 175,
+      "Business": 170,
+      "Travel": 170,
+      "Wealth Accumulation": 163,
+      "Retirement": 163,
+      "Home Purchase": 159
+    },
+    "Risk_Tolerance_Level": {
+      "Low": 415,
+      "Medium": 374,
+      "High": 211
+    },
+    "Savings_Channel": {
+      "Investment Platform": 278,
+      "Digital Wallet": 243,
+      "Bank Account": 241,
+      "Cash": 238
+    },
+    "Region": {
+      "Central": 219,
+      "North": 200,
+      "West": 198,
+      "South": 196,
+      "East": 187
+    }
+  },
+  "consistency_checks": {
+    "expenses_exceed_income": 345,
+    "expenses_exceed_income_and_positive_savings": 345,
+    "no_debt_with_positive_payment": 252,
+    "no_debt_records": 252
+  },
+  "cleaning_policy": "No rows or values were changed by this audit."
+}
