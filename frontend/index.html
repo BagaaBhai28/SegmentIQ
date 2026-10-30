@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f6f7f4" />
+    <title>SegmentIQ — Investor profile explorer</title>
+    <link rel="stylesheet" href="/assets/styles.css" />
+    <script src="/assets/app.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="SegmentIQ home"><span class="brand-mark">S</span> SegmentIQ</a>
+      <span class="demo-tag"><span class="status-dot"></span> Synthetic data demo</span>
+    </header>
+    <main>
+      <section class="intro">
+        <p class="eyebrow">INVESTOR PROFILE EXPLORER</p>
+        <h1>Explore a profile’s<br /><span>financial pattern.</span></h1>
+        <p class="intro-copy">Enter a sample profile to see which simulated investor group it most resembles.</p>
+      </section>
+      <div class="notice" role="note"><span class="notice-icon">i</span><p>This demo uses generated data and simulated groups. Results are for exploring the product only—not financial advice or a real risk assessment.</p></div>
+      <section class="workspace">
+        <form id="profile-form" class="panel form-panel">
+          <div class="panel-heading"><div><p class="eyebrow">PROFILE DETAILS</p><h2>Your sample profile</h2></div><button class="text-button" type="button" id="fill-example">Use example</button></div>
+          <fieldset><legend>About you</legend><div class="field-grid">
+            <label>Age<input name="Age" type="number" min="18" max="100" value="32" required /></label>
+            <label>City tier<select name="City_Tier"><option>Tier 1</option><option>Tier 2</option><option>Tier 3</option></select></label>
+            <label>Employment<select name="Employment_Type"><option>Salaried</option><option>Self-Employed</option><option>Student</option><option>Unemployed</option></select></label>
+            <label>Monthly income <span class="unit">₹</span><input name="Monthly_Income_INR" type="number" min="0" value="160000" required /></label>
+            <label>Monthly expenses <span class="unit">₹</span><input name="Monthly_Expenses_INR" type="number" min="0" value="85000" required /></label>
+            <label>Monthly savings <span class="unit">%</span><input name="Savings_Percentage" type="number" min="0" max="100" step="0.1" value="46.9" required /></label>
+            <label>Debt status<select name="Debt_Status"><option>No Debt</option><option>Home Loan</option><option>Credit Card Debt</option><option>Personal Loan</option></select></label>
+            <label>Monthly debt payment <span class="unit">₹</span><input name="Monthly_Debt_Payment_INR" type="number" min="0" value="0" required /></label>
+          </div></fieldset>
+          <fieldset><legend>Investment habits</legend><div class="field-grid">
+            <label>Monthly SIP <span class="unit">₹</span><input name="Monthly_SIP" type="number" min="0" value="30000" required /></label>
+            <label>Experience <span class="unit">years</span><input name="Investment_Experience_Years" type="number" min="0" max="82" step="0.5" value="6" required /></label>
+            <label>Financial literacy <span class="unit">/ 10</span><input name="Financial_Literacy_Score" type="number" min="1" max="10" value="8" required /></label>
+            <label>Risk comfort<select name="Risk_Tolerance_Level"><option>Low</option><option>Medium</option><option selected>High</option></select></label>
+            <label>Primary goal<select name="Primary_Financial_Goal"><option>Wealth Accumulation</option><option>Retirement</option><option>Tax Saving</option><option>Home Purchase</option></select></label>
+          </div>
+          <div class="allocation-heading"><span>Portfolio allocation</span><span>Must total 100%</span></div>
+          <div class="allocation-grid">
+            <label>Equity<input name="Equity_Allocation_Pct" type="number" min="0" max="100" step="0.1" value="70" required /></label>
+            <label>FDs<input name="FD_Allocation_Pct" type="number" min="0" max="100" step="0.1" value="10" required /></label>
+            <label>Debt assets<input name="Debt_Allocation_Pct" type="number" min="0" max="100" step="0.1" value="20" required /></label>
+          </div></fieldset>
+          <p id="form-error" class="form-error" role="alert" hidden></p>
+          <button class="primary-button" type="submit"><span>Explore my segment</span><span aria-hidden="true">↗</span></button>
+          <p class="privacy-note">Your profile is used for this result and is not saved.</p>
+        </form>
+        <aside class="results-column">
+          <section id="result-card" class="panel result-card empty-result" aria-live="polite">
+            <p class="eyebrow">YOUR MATCH</p><div class="empty-mark">✳</div><h2>Ready when you are</h2><p>Complete the profile and explore the simulated segment it matches.</p>
+          </section>
+          <section class="panel segment-panel"><div class="panel-heading compact-heading"><div><p class="eyebrow">THE MODEL</p><h2>Four simulated groups</h2></div></div><div id="segment-list" class="segment-list"><p class="loading">Loading segments…</p></div></section>
+        </aside>
+      </section>
+      <footer><span>SEGMENTIQ</span><span>Generated data · Exploratory only</span></footer>
+    </main>
+  </body>
+</html>

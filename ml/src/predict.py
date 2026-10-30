@@ -1,4 +1,4 @@
-"""Assign one financial profile using the saved SegmentIQ model pipeline."""
+"""Assign one synthetic investor profile using the saved SegmentIQ model."""
 from __future__ import annotations
 
 import argparse
@@ -10,50 +10,62 @@ import joblib
 import numpy as np
 import pandas as pd
 
-DEFAULT_ARTIFACTS = Path("ml/artifacts")
+ROOT = Path(__file__).resolve().parents[2]
+DEFAULT_ARTIFACTS = ROOT / "ml/artifacts"
 
 
 def predict_profile(profile: dict[str, Any], artifacts_dir: Path = DEFAULT_ARTIFACTS) -> dict[str, Any]:
     contract = json.loads((artifacts_dir / "feature_contract.json").read_text(encoding="utf-8"))
-    features = contract["features"]
-    missing = [name for name in features if name not in profile]
+    numeric = contract["numeric_features"]
+    categorical = contract["categorical_features"]
+    required = numeric + categorical
+    missing = [name for name in required if name not in profile]
     if missing:
-        raise ValueError(f"Profile is missing required features: {missing}")
-    try:
-        row = pd.DataFrame([{name: float(profile[name]) for name in features}], columns=features)
-    except (TypeError, ValueError) as error:
-        raise ValueError("All model features must be numeric") from error
-    values = row.to_numpy(dtype=float)
-    if not np.isfinite(values).all():
-        raise ValueError("Model features must be finite numbers")
+        raise ValueError(f"Profile is missing required fields: {missing}")
 
-    pipeline = joblib.load(artifacts_dir / "investor_segment_pipeline.joblib")
+    row: dict[str, Any] = {}
+    for field in numeric:
+        try:
+            value = float(profile[field])
+        except (TypeError, ValueError) as error:
+            raise ValueError(f"{field} must be numeric") from error
+        if not np.isfinite(value):
+            raise ValueError(f"{field} must be finite")
+        row[field] = value
+    for field in categorical:
+        value = str(profile[field])
+        allowed = contract["categorical_values"][field]
+        if value not in allowed:
+            raise ValueError(f"{field} must be one of: {', '.join(allowed)}")
+        row[field] = value
+
+    fitted = joblib.load(artifacts_dir / "investor_segment_pipeline.joblib")
+    transformed = fitted["preprocessor"].transform(pd.DataFrame([row], columns=required))
+    cluster_id = int(fitted["model"].predict(transformed)[0])
+    centroid = fitted["model"].cluster_centers_[cluster_id]
+    distance = float(np.linalg.norm(centroid - transformed[0]))
     pca = joblib.load(artifacts_dir / "pca_projection.joblib")
+    projection = pca.transform(transformed)[0]
     profiles = json.loads((artifacts_dir / "cluster_profiles.json").read_text(encoding="utf-8"))
-    cluster_id = int(pipeline.predict(row)[0])
-    scaled = pipeline.named_steps["scaler"].transform(row)
-    centers = pipeline.named_steps["kmeans"].cluster_centers_
-    distance = float(np.linalg.norm(centers[cluster_id] - scaled[0]))
-    projection = pca.transform(scaled)[0]
+    cluster = profiles[str(cluster_id)]
     return {
         "cluster_id": cluster_id,
-        "cluster_label": profiles[str(cluster_id)]["label"],
+        "segment_name": cluster["display_name"],
         "distance_to_centroid": distance,
-        "distance_interpretation": "Standardized-space distance; it is not a probability or confidence score.",
+        "distance_note": "Distance in standardized feature space; it is not a probability or confidence score.",
         "pca_coordinates": {"x": float(projection[0]), "y": float(projection[1])},
-        "model_contract_version": contract["contract_version"],
-        "disclaimer": "Exploratory segment assignment on a synthetic-like dataset; not financial advice or a validated risk assessment.",
+        "cluster_profile": cluster,
+        "disclaimer": "This is an exploratory assignment using synthetic scenario data, not a validated investor assessment or financial advice.",
     }
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--input", type=Path, required=True, help="JSON file containing the six required numeric fields")
+    parser.add_argument("--input", type=Path, required=True, help="JSON file with all model profile fields")
     parser.add_argument("--artifacts-dir", type=Path, default=DEFAULT_ARTIFACTS)
     args = parser.parse_args()
     profile = json.loads(args.input.read_text(encoding="utf-8"))
-    result = predict_profile(profile, args.artifacts_dir)
-    print(json.dumps(result, indent=2, ensure_ascii=False))
+    print(json.dumps(predict_profile(profile, args.artifacts_dir), indent=2, ensure_ascii=False))
 
 
 if __name__ == "__main__":

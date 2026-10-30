@@ -1,23 +1,16 @@
 # Project roadmap
 
-Work proceeds one stage at a time. A stage is marked complete only after its listed deliverables are present and reviewed.
-
-| Stage | Goal | Status | Exit condition |
+| Stage | Goal | Status | Notes |
 |---|---|---|---|
-| 1. Scope and setup | Define MVP, stack, repository structure, and handling rules | Complete | Requirements, architecture, and repo baseline documented |
-| 2. Dataset audit | Inspect source, schema, quality, provenance, and feature fit | Complete | Reproducible audit script and dataset report available; raw source remains local/ignored |
-| 3. ML pipeline | Compare valid feature representations and evaluate a reproducible baseline | Complete (demo baseline) | Feature choice, metrics, stability, profiles, and inference contract reviewed; limits documented |
-| 4. Cluster interpretation | Decide whether groups merit descriptive labels and build analytics outputs | Pending | Profiles and visualizations validated; limitations explicit |
-| 5. Backend API | Serve validated profile inference through FastAPI | Pending | API contract matches the saved model pipeline |
-| 6. Database and authentication | Persist user profiles/results and protect account access | Pending | Auth, ownership checks, migrations, and secrets handling implemented |
-| 7. Frontend | Build responsive profile entry and results views | Pending | Core flow usable and accessible |
-| 8. Integration | Connect frontend, API, database, and model inference | Pending | End-to-end flow works with consistent schemas and errors |
-| 9. Quality and security | Verify data validation, authorization, privacy, and failure behavior | Pending | Verification evidence documented and issues addressed |
-| 10. Deployment and academic docs | Prepare deployment configuration and project/viva material | Pending | Reproducible setup, deployment notes, diagrams, and limitations complete |
+| 1. Scope and setup | Define project scope and repository setup | Complete | College-project demo scope |
+| 2. Dataset audit | Review the supplied CSV | Complete | Original CSV remains local; current demo uses a separate generated dataset |
+| 3. ML pipeline | Generate data, compare K, train, and predict | Complete | Seeded 1,600-profile simulation; silhouette selected K=4; archetype field excluded from training |
+| 4. Cluster interpretation | Summarize and name simulated groups | Complete | Names map to generated archetypes; not real investor personas |
+| 5. Backend API | Provide health, segment, and prediction routes | Complete | FastAPI validates profile fields and returns cluster summaries |
+| 6. Persistence and authentication | Store profiles and protect accounts | Deferred | This demo does not save submitted profiles, so accounts and a database are unnecessary for the current flow |
+| 7. Frontend | Provide a usable profile form and results view | Complete | Responsive browser UI served by the API |
+| 8. Integration | Connect UI, API, and model | Complete | Profile form calls the same trained pipeline |
+| 9. Quality and security | Validate inputs and failure behavior | Complete for demo | Bounds, category values, allocation totals, and debt consistency are validated; API returns 422 for invalid profiles |
+| 10. Deployment | Prepare a hosted deployment | Pending | Local run instructions are in the README |
 
-## Current decisions and blockers
-
-- The supplied dataset is treated as a synthetic-like prototype source; it does not support real-world investor claims.
-- No generated SIP, allocation, or experience fields will be used as if they were observed.
-- Dataset source URL/license is unknown. This does not block an explicitly synthetic educational prototype, but it must be resolved before redistribution or claims of empirical validity.
-- The six-numeric-field K=2 result is a diagnostic baseline, not the final segmentation. A mixed financial/behavioral experiment performed worse; see `docs/model_report.md`.
+The synthetic archetypes are useful for exercising the application. They do not establish that real investors form four naturally occurring groups. The real dataset can replace the simulation when one is selected and audited.

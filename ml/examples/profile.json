@@ -1,8 +1,18 @@
 {
-  "Age": 30,
-  "Monthly_Income_INR": 80000,
-  "Monthly_Expenses_INR": 50000,
-  "Savings_Percentage": 25,
-  "Monthly_Debt_Payment_INR": 5000,
-  "Financial_Literacy_Score": 6
+  "Age": 32,
+  "City_Tier": "Tier 1",
+  "Employment_Type": "Salaried",
+  "Monthly_Income_INR": 160000,
+  "Monthly_Expenses_INR": 85000,
+  "Savings_Percentage": 46.9,
+  "Debt_Status": "No Debt",
+  "Monthly_Debt_Payment_INR": 0,
+  "Monthly_SIP": 30000,
+  "Equity_Allocation_Pct": 70,
+  "FD_Allocation_Pct": 10,
+  "Debt_Allocation_Pct": 20,
+  "Investment_Experience_Years": 6,
+  "Financial_Literacy_Score": 8,
+  "Risk_Tolerance_Level": "High",
+  "Primary_Financial_Goal": "Wealth Accumulation"
 }
