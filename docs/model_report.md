@@ -1,8 +1,10 @@
-# ML baseline report
+# Historical ML experiments on the supplied CSV
+
+> **Historical research note:** The results below describe earlier experiments using the separately supplied CSV and derived features. They do **not** describe the currently deployed app model. The current app trains on generated scenario data using 11 numeric and 5 categorical features; see [the current ML workflow](../ml/README.md). The source CSV is not in this repository, so the figures below are recorded results and are not independently reproducible from a fresh checkout.
 
 ## Stage 3 result
 
-The reproducible baseline in `ml/src/train.py` uses the six numeric fields already present in the source CSV. It excludes `Respondent_ID`, performs no record deletion or value correction, scales the inputs, evaluates K=2 through K=8 across five random seeds, and saves one scikit-learn pipeline plus its feature contract.
+An earlier source-CSV baseline experiment used the six numeric fields available in that file. It excluded `Respondent_ID`, performed no record deletion or value correction, scaled the inputs, evaluated K=2 through K=8 across five random seeds, and saved a scikit-learn pipeline plus feature contract. The current `ml/src/train.py` implements the separate synthetic demo pipeline described in `ml/README.md`.
 
 The provisional baseline uses K=2 only as a diagnostic reference. Across five seeds it has mean ARI 0.991 and the highest Calinski–Harabasz score, while the highest mean silhouette belongs to K=8. The scores are weak and metrics disagree. K=2 is not asserted to be the objectively correct number of investor segments; increasing K would only create more groups, not establish more useful investor personas.
 
@@ -60,9 +62,9 @@ So K does **not** consistently increase: by silhouette it falls from 8 to 2, whi
 
 The derived dataset is `ml/data/processed/synthetic_investor_features.csv` (ignored by Git), and aggregate results are in `ml/reports/synthetic_feature_experiment.json`.
 
-## Reproducible commands
+## Historical experiment commands
 
-From the repository root, after placing the source CSV in the ignored raw-data location:
+These commands document the earlier workflow. The source CSV is required for its audit and feature experiments; it is not committed. `ml/src/train.py` now trains the current synthetic demo model, not the six-field baseline summarized above.
 
 ```powershell
 .\.venv\Scripts\python.exe -m pip install -r ml/requirements.txt
@@ -74,10 +76,10 @@ From the repository root, after placing the source CSV in the ignored raw-data l
 
 Generated joblib models and row-level assignments are local and ignored by Git. Aggregate model-selection and training reports are kept in `ml/reports/`.
 
-## Stage 3 exit notes
+## Notes from the earlier experiment
 
-- Training, model selection, cluster profiles, PCA projection, model artifacts, and inference use the same six-field contract.
-- A local inference smoke check produced a cluster assignment and PCA coordinates from the sample profile.
+- The earlier six-field experiment was intended to keep training and inference on one contract; those artifacts are not the deployed model.
+- A local inference smoke check in the earlier workflow produced a cluster assignment and PCA coordinates from its sample profile.
 - The numeric-vs-mixed feature comparison is saved in `ml/reports/feature_set_comparison.json` and is reproducible from `ml/src/compare_feature_sets.py`.
 - The seeded synthetic feature experiment is reproducible with `ml/src/synthetic_feature_experiment.py`; its row-level output remains local and ignored.
-- The result is an educational demonstration, not a validated financial assessment. Do not name personas from this CSV. Stage 4 should start after choosing and auditing the empirical SEBI respondent file or explicitly retaining a demo-only scope.
+- The experiment is not a validated financial assessment. Do not treat names or assignments from the supplied CSV experiments as validated investor personas.

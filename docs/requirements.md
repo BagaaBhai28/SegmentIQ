@@ -1,34 +1,32 @@
-# Requirements and scope
+# Requirements and project scope
 
-## Purpose
+## Current purpose
 
-Build an academic demonstration that groups financial profiles using unsupervised learning and explains the resulting groups with transparent descriptive summaries.
+Provide an academic demonstration of how an unsupervised clustering pipeline can transform a validated financial profile into an exploratory group match and descriptive summary.
 
-## Core requirements
+## Current capabilities
 
-- Accept a documented and validated financial profile.
-- Apply exactly the preprocessing and feature order used during model training.
-- Return a cluster assignment and descriptive, non-advisory explanation.
-- Show how the profile compares with the reference cluster statistics.
-- Provide visual summaries once the inference contract is stable.
+- Reproducibly generate a clearly labeled synthetic investor-profile dataset.
+- Compare candidate cluster counts and seed stability using a documented preprocessing contract.
+- Accept and validate a profile through a FastAPI API and browser form.
+- Return the cluster assignment and descriptive reference statistics without saving the submitted profile.
+- Show clear caveats that the result is synthetic and not a validated investor assessment.
+- Deploy the application to Vercel from the GitHub repository.
 
-## Later requirements
+## Out of scope
 
-- User registration, login, profile history, and persistent storage.
-- Responsive React application and dashboard.
-- Deployment and academic report, diagrams, and viva material.
+- Investor suitability, personalized investment recommendations, or financial advice.
+- Claims that the generated groups describe real investors.
+- Market prediction, portfolio optimization, or live market data.
+- User accounts, profile history, or persistence in a database.
+- Redistribution of the source CSV without verified provenance and licensing.
 
-## Out of scope for the first version
+## Data and evaluation requirements for future changes
 
-- Personalized portfolio recommendations.
-- Market prediction or real-time market data.
-- Claims that clusters establish an individual's true risk tolerance.
-
-## Data and evaluation requirements
-
-- Record dataset provenance, license, and whether observations are synthetic.
-- Separate observed fields from simulated or engineered fields.
-- Keep raw source data unchanged and document every cleaning decision.
-- Select features and cluster count based on reproducible evaluation, not inherited hard-coded choices.
-- Report cluster sizes, multiple metrics, stability, and known limitations.
-- Keep training and inference feature schemas identical.
+- Record provenance, license, collection method, and whether every field is observed, derived, or simulated.
+- Keep any raw source file unchanged and out of Git unless its license explicitly permits publication.
+- Document cleaning rules and compare their effects rather than silently changing records.
+- Choose features and cluster count from repeatable evaluation, stability, cluster sizes, and domain usefulness; do not target a preferred K by adding random fields.
+- Keep training and inference feature names, order, encoders, and model artifacts in one shared contract.
+- Reinterpret cluster names whenever the model or source data changes; cluster IDs are arbitrary.
+- Preserve a no-persistence default until data retention and privacy needs have been designed.

@@ -2,15 +2,13 @@
 
 | Stage | Goal | Status | Notes |
 |---|---|---|---|
-| 1. Scope and setup | Define project scope and repository setup | Complete | College-project demo scope |
-| 2. Dataset audit | Review the supplied CSV | Complete | Original CSV remains local; current demo uses a separate generated dataset |
-| 3. ML pipeline | Generate data, compare K, train, and predict | Complete | Seeded 1,600-profile simulation; silhouette selected K=4; archetype field excluded from training |
-| 4. Cluster interpretation | Summarize and name simulated groups | Complete | Names map to generated archetypes; not real investor personas |
-| 5. Backend API | Provide health, segment, and prediction routes | Complete | FastAPI validates profile fields and returns cluster summaries |
-| 6. Persistence and authentication | Store profiles and protect accounts | Deferred | This demo does not save submitted profiles, so accounts and a database are unnecessary for the current flow |
-| 7. Frontend | Provide a usable profile form and results view | Complete | Responsive browser UI served by the API |
-| 8. Integration | Connect UI, API, and model | Complete | Profile form calls the same trained pipeline |
-| 9. Quality and security | Validate inputs and failure behavior | Complete for demo | Bounds, category values, allocation totals, and debt consistency are validated; API returns 422 for invalid profiles |
-| 10. Deployment | Prepare a hosted deployment | Pending | Local run instructions are in the README |
+| 1. Scope and repository | Define the demo and organize the codebase | Complete | Current structure and setup are documented in the README. |
+| 2. Dataset review | Audit the supplied personal-finance CSV | Complete for review | The file remains local, its provenance/license are unverified, and it is not used by the deployed app. |
+| 3. Reproducible ML demo | Generate data, evaluate cluster counts, train and infer | Complete | The app uses a seeded, 1,600-profile synthetic scenario dataset and excludes its archetype label from model features. |
+| 4. API and UI | Validate profiles and present simulated cluster summaries | Complete | FastAPI serves a plain HTML/CSS/JavaScript explorer; profiles are not persisted. |
+| 5. Deployment | Publish the app and connect Git-based deployments | Complete | Vercel builds from `main`; deployment steps are tied to the root Python configuration. |
+| 6. Empirical data readiness | Establish data provenance and evaluate an appropriate real dataset | Deferred | Resume when a suitable, licensed dataset is selected. Do not assume the current CSV represents real investors. |
+| 7. Model validation | Assess usefulness on verified observations with domain review | Future | Revisit feature selection, cluster count, stability, interpretation, and fairness after stage 6. |
+| 8. Product expansion | Consider persistence, accounts, or additional views | Deferred | Requires a clear user need plus privacy, access-control, and data-retention design. |
 
-The synthetic archetypes are useful for exercising the application. They do not establish that real investors form four naturally occurring groups. The real dataset can replace the simulation when one is selected and audited.
+The current four-group UI is a synthetic demonstration. It must not be presented as evidence that real investors naturally form four segments.
