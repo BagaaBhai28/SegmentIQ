@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#f6f7f4" />
     <title>SegmentIQ — Investor profile explorer</title>
-    <link rel="stylesheet" href="/assets/styles.css" />
-    <script src="/assets/app.js" defer></script>
+    <link rel="stylesheet" href="/assets/styles.css?v=2" />
+    <script src="/assets/app.js?v=2" defer></script>
   </head>
   <body>
     <header class="topbar">
@@ -46,6 +46,15 @@
             <label>FDs<input name="FD_Allocation_Pct" type="number" min="0" max="100" step="0.1" value="10" required /></label>
             <label>Debt assets<input name="Debt_Allocation_Pct" type="number" min="0" max="100" step="0.1" value="20" required /></label>
           </div></fieldset>
+          <section class="live-profile" aria-live="polite" aria-label="Live profile summary">
+            <div class="live-profile-heading"><strong>Live profile check</strong><span id="allocation-status" class="allocation-status is-valid">Allocation totals 100%</span></div>
+            <div class="live-profile-grid">
+              <p><span>Balance before SIP</span><strong id="live-cashflow">₹0</strong></p>
+              <p><span>Balance after SIP</span><strong id="live-after-sip">₹0</strong></p>
+              <p><span>Expenses + debt / income</span><strong id="live-cost-ratio">0%</strong></p>
+              <p><span>SIP / income</span><strong id="live-sip-ratio">0%</strong></p>
+            </div>
+          </section>
           <p id="form-error" class="form-error" role="alert" hidden></p>
           <button class="primary-button" type="submit"><span>Explore my segment</span><span aria-hidden="true">↗</span></button>
           <p class="privacy-note">Your profile is used for this result and is not saved.</p>
