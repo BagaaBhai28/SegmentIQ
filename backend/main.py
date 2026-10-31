@@ -24,6 +24,8 @@ app.mount("/assets", StaticFiles(directory=FRONTEND_DIR / "assets"), name="asset
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    # Figma Make previews run on figma.com; published Make apps use figma.site.
+    allow_origin_regex=r"^https://([a-z0-9-]+\.)?figma\.com$|^https://[a-z0-9-]+\.figma\.site$",
     allow_credentials=False,
     allow_methods=["GET", "POST"],
     allow_headers=["Content-Type"],
@@ -102,3 +104,4 @@ def predict(profile: InvestorProfile) -> dict[str, Any]:
         raise HTTPException(status_code=503, detail="Model artifacts are missing; train the model first.") from error
     except ValueError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
+
