@@ -41,13 +41,13 @@ flowchart LR
     E --> F
 ```
 
-The full report uses both paths. **No current portfolio** uses only the budget path.
+The full report uses both paths. **Budget report only** uses only the budget path.
 
 ## Demo walkthrough
 
 1. Select **Use example** to explore the report, or enter your own details.
 2. Allocate your monthly take-home income across regular expenses, savings, loan repayments, investments, and other expenses. The live chart updates as you enter amounts. For the investor profile, equity, fixed deposits, and debt assets must total 100%.
-3. Select **Generate my report**. If you select **No current portfolio**, the form asks only for budget details and returns the budget comparison.
+3. Select **Generate my report**. If you select **Budget report only**, the form asks only for budget details and returns the budget comparison.
 
 ### Worked example
 
@@ -132,7 +132,7 @@ Invoke-RestMethod http://127.0.0.1:8000/report -Method Post -ContentType 'applic
 
 ## Testing and validation
 
-- Run **Use example** and generate the full report. Select **No current portfolio** and generate it again to check the budget-only response.
+- Run **Use example** and generate the full report. Select **Budget report only** and generate it again to check the budget-only response.
 - Run the API example above to exercise the same input as the browser. A combined request with contradictory budget and profile shares should return HTTP 422.
 - Rebuild the synthetic dataset and model using the local setup commands. The trainer prints candidate K scores, seed agreement, and group sizes. [Model workflow](ml/README.md)
 - After a deployment, check [production health](https://segmentiq-khaki.vercel.app/health) and repeat both report paths.

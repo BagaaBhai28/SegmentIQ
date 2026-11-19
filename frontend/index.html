@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#f6f5ef" />
     <title>SegmentIQ — Investor profile explorer</title>
-    <link rel="stylesheet" href="/assets/styles.css?v=8" />
-    <script src="/assets/app.js?v=17" defer></script>
+    <link rel="stylesheet" href="/assets/styles.css?v=11" />
+    <script src="/assets/app.js?v=21" defer></script>
   </head>
   <body>
     <header class="topbar">
-      <a class="brand" href="/" aria-label="SegmentIQ home"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>Segment<strong>IQ</strong></span></a>
+      <a class="brand" href="#profile-title" aria-label="SegmentIQ profile form"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>Segment<strong>IQ</strong></span></a>
       <div class="completion"><label for="completion-meter">Fields filled</label><progress id="completion-meter" value="0" max="100"></progress><span id="completion-value">0%</span></div>
     </header>
     <main>
@@ -19,14 +19,21 @@
       </section>
       <section class="workspace">
         <form id="profile-form" class="panel form-panel">
-          <div class="panel-heading"><h2>Profile details</h2><button class="text-button" type="button" id="fill-example">Use example <span aria-hidden="true">↗</span></button></div>
+          <div class="panel-heading">
+            <h2 id="profile-title" tabindex="-1">Profile details</h2>
+            <div class="heading-actions">
+              <button class="text-button text-button-secondary" type="button" id="start-over" disabled>Start over</button>
+              <button class="text-button" type="button" id="fill-example">Use example <span aria-hidden="true">↗</span></button>
+            </div>
+          </div>
           <p id="example-feedback" class="example-feedback" hidden><span role="status">Example loaded.</span> <button class="text-button" type="button" id="undo-example">Undo</button></p>
+          <label class="portfolio-option"><input type="checkbox" id="no-portfolio" name="No_Portfolio" aria-describedby="no-portfolio-note" /> Budget report only</label>
+          <p id="no-portfolio-note" class="field-note">Get the SEBI budget comparison and skip profile and portfolio questions.</p>
+          <div class="entry-fields">
           <p id="mobile-budget-status" class="mobile-budget-status" hidden></p>
-          <label class="portfolio-option"><input type="checkbox" id="no-portfolio" name="No_Portfolio" /> No current portfolio</label>
-          <p id="no-portfolio-note" class="field-note" hidden>Compare your budget with households in the SEBI investor sample.</p>
-          <fieldset><legend>About you</legend><div class="field-grid">
+          <fieldset><legend id="about-you-title">About you</legend><div class="field-grid">
             <label data-portfolio-field>Age<input name="Age" type="number" min="18" max="100" required /></label>
-            <label data-portfolio-field>City tier<select name="City_Tier" required><option value="" disabled selected>Select an option</option><option>Tier 1</option><option>Tier 2</option><option>Tier 3</option></select></label>
+            <label data-portfolio-field>City tier<small id="city-tier-help">Choose the closest fit for your city.</small><select name="City_Tier" aria-describedby="city-tier-help" required><option value="" disabled selected>Select an option</option><option value="Tier 1">Tier 1 (major metro)</option><option value="Tier 2">Tier 2 (mid-sized city)</option><option value="Tier 3">Tier 3 (smaller city or town)</option></select></label>
             <label data-portfolio-field>Employment<select name="Employment_Type" required><option value="" disabled selected>Select an option</option><option>Salaried</option><option>Self-Employed</option><option>Student</option><option>Unemployed</option></select></label>
             <label>Monthly take-home income <span class="unit">₹</span><input name="Monthly_Income_INR" type="number" max="10000000" min="0.01" step="0.01" required /></label>
             <label>Regular expenses <span class="unit">₹</span><input name="Monthly_Expenses_INR" type="number" max="10000000" min="0" step="0.01" required /></label>
@@ -35,16 +42,17 @@
             <label>Total monthly loan payments <span class="unit">₹</span><input name="Monthly_Debt_Payment_INR" type="number" max="10000000" min="0" step="0.01" required /></label>
           </div></fieldset>
           <fieldset><legend>Investment habits</legend><div class="field-grid">
-            <label>Monthly SIP <span class="unit">₹</span><input name="Monthly_SIP" type="number" max="10000000" min="0" step="0.01" required /></label>
+            <label>Monthly SIP <small id="sip-help">Systematic investment plan. Enter 0 if you do not use one.</small><span class="unit">₹</span><input name="Monthly_SIP" aria-describedby="sip-help" type="number" max="10000000" min="0" step="0.01" required /></label>
             <label data-portfolio-field>Experience <span class="unit">years</span><input name="Investment_Experience_Years" type="number" min="0" max="82" step="0.5" required /></label>
             <label data-portfolio-field>Financial literacy <small>1 beginner · 10 advanced</small><input name="Financial_Literacy_Score" type="number" min="1" max="10" required /></label>
             <label data-portfolio-field>Risk comfort<select name="Risk_Tolerance_Level" required><option value="" disabled selected>Select an option</option><option>Low</option><option>Medium</option><option>High</option></select></label>
             <label data-portfolio-field>Primary goal<select name="Primary_Financial_Goal" required><option value="" disabled selected>Select an option</option><option>Wealth Accumulation</option><option>Retirement</option><option>Tax Saving</option><option>Home Purchase</option></select></label>
           </div>
           <div id="portfolio-allocation" data-portfolio-field><div class="allocation-heading"><span>Portfolio allocation (%)</span><span id="allocation-status" class="allocation-status">Portfolio total: 0%</span></div>
-          <div class="allocation-grid">
+          <p id="allocation-help" class="field-note">Debt assets include bonds and debt funds. If your holdings include gold, property, or other assets outside these categories, choose Budget report only.</p>
+          <div class="allocation-grid" aria-describedby="allocation-help">
             <label>Equity<input aria-describedby="allocation-error" name="Equity_Allocation_Pct" type="number" min="0" max="100" step="0.1" required /></label>
-            <label>FDs<input name="FD_Allocation_Pct" type="number" min="0" max="100" step="0.1" required /></label>
+            <label>Fixed deposits<input name="FD_Allocation_Pct" type="number" min="0" max="100" step="0.1" required /></label>
             <label>Debt assets<input name="Debt_Allocation_Pct" type="number" min="0" max="100" step="0.1" required /></label>
           </div>
           <p id="allocation-error" class="form-error" role="alert" hidden></p>
@@ -59,13 +67,15 @@
             <p id="sebi-budget-total" tabindex="-1" aria-live="polite">Enter your monthly income to start.</p>
             <dl id="budget-breakdown" class="budget-breakdown" hidden></dl>
           </section></fieldset>
-          <p id="form-error" class="form-error" role="alert" hidden></p>
+          </div>
+          <p id="form-error" class="form-error" role="alert" tabindex="-1" hidden></p>
           <button class="primary-button" type="submit"><span>Generate my report</span><span aria-hidden="true">↗</span></button>
           <p class="privacy-note">Your profile is used for this result and is not saved.</p>
         </form>
         <aside class="results-column">
           <section class="budget-card" aria-labelledby="preview-heading">
             <h2 id="preview-heading">Monthly budget</h2>
+            <p id="preview-status" class="preview-status" hidden></p>
             <div class="budget-visual">
               <div class="budget-donut" aria-hidden="true"><div><strong id="ring-percent">—</strong><span>allocated</span></div></div>
               <dl id="preview-legend" class="preview-legend"></dl>

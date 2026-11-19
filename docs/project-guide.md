@@ -9,7 +9,7 @@ SegmentIQ turns one set of browser inputs into two descriptive results. The simu
 | Choose | Enter | Receive |
 |---|---|---|
 | Full report | Profile, monthly budget, investment habits, and portfolio mix | A simulated investor match and a SEBI budget comparison |
-| **No current portfolio** | Monthly income and budget amounts | A SEBI budget comparison |
+| **Budget report only** | Monthly income and budget amounts | A SEBI budget comparison |
 
 The survey comparison uses the same five amounts in both modes. The optional investor result uses an additional set of profile and investment fields. The live chart shows what you entered before either model runs.
 
@@ -21,7 +21,7 @@ The survey comparison uses the same five amounts in both modes. The optional inv
 |---|---|
 | About you | Age, city tier, employment, monthly take-home income, regular expenses, savings, main debt type, and total monthly loan repayments |
 | Investment habits | Monthly systematic investment plan (SIP) amount, years of investing, self-rated financial literacy from 1 to 10, risk comfort, and primary financial goal |
-| Portfolio allocation | Percentage of your current holdings in equity, fixed deposits (FDs), and debt assets. The three percentages must total 100%. |
+| Portfolio allocation | Percentage of your current holdings in equity, fixed deposits (FDs), and debt assets such as bonds and debt funds. The three percentages must total 100%. Use **Budget report only** if your holdings include assets outside these categories. |
 | Where your monthly money goes | Investments beyond your SIP and other expenses. The form combines these with the amounts entered earlier. |
 
 **Loan repayments** are monthly cash outflows. **Debt assets** are part of the portfolio you hold. The portfolio mix describes holdings, while the budget describes monthly flows.
@@ -38,7 +38,7 @@ The survey comparison uses the same five amounts in both modes. The optional inv
 
 Use the same scope for income and spending. If you enter household income, use household amounts throughout. Count each amount once and enter zero for unused categories. The browser uses paise for reconciliation. The live budget status shows the amount left to allocate or the excess over income.
 
-Use **Use example** to populate both parts of the form. **Undo** restores the previous answers and preserves fields you subsequently edited.
+Use **Use example** to populate both parts of the form. **Undo** restores the previous answers and preserves fields you subsequently edited. **Start over** asks for confirmation before clearing your answers and report.
 
 ## Read the report
 
@@ -57,7 +57,7 @@ Use **Use example** to populate both parts of the form. **Undo** restores the pr
 | **Compare values** | Your value appears as a marker, and the simulated group's mean appears as a shaded bar. |
 | **Group makeup** | Common answers and numeric averages among the generated profiles assigned to that group. |
 
-Budget-only reports show the monthly behavior card and budget comparison. Changes to the form mark the existing report as stale until you generate it again.
+Budget-only reports show the monthly behavior card and budget comparison. Select **Edit answers** to return to the top of the form or **Edit budget** to jump to the income and expense fields. Both keep your entries in place. Changes mark the existing report as stale until you generate it again.
 
 ## Model 1 · Simulated investor groups
 
@@ -112,10 +112,10 @@ The full response has `investor_cluster` and `sebi_budget` objects. In the budge
 
 - **Local** — Follow the [setup steps](../README.md#run-locally) with Python 3.13. Train the synthetic model before requesting a full report. FastAPI serves the frontend directly.
 - **Production** — Vercel builds from GitHub `main`. The build script in [`pyproject.toml`](../pyproject.toml) regenerates the synthetic dataset and artifacts. [`main.py`](../main.py) exposes FastAPI. [`vercel.json`](../vercel.json) configures the runtime.
-- **Budget remains unallocated** — Use the on-screen balance to find the difference. Check that **Investments beyond SIP** excludes the SIP entered earlier.
-- **Portfolio validation fails** — Adjust equity, FDs, and debt assets to total 100%. Use **No current portfolio** for a budget-only report.
+- **Budget remains unallocated** — Use the on-screen balance to find the difference. If a budget amount is invalid, the chart pauses and the message appears beside the field. When you return from the report to edit, the live chart moves above the earlier result. Check that **Investments beyond SIP** excludes the SIP entered earlier.
+- **Portfolio validation fails** — Adjust equity, FDs, and debt assets to total 100%. Use **Budget report only** for a budget-only report.
 - **Model artifacts unavailable** — Check `/health`, run the generator and trainer, then try again. Inspect the Vercel build for a production failure.
-- **Report request fails** — The form lets you retry. It rejects a response if you changed the answers while it was loading.
+- **Report request fails** — The form brings retry messages into view if you are still waiting where you submitted. If you resume editing, your focus stays in the form. A response for earlier answers is discarded.
 
 ## Scope and privacy
 

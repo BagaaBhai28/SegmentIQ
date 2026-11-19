@@ -1,13 +1,25 @@
 const form = document.querySelector('#profile-form');
 const resultCard = document.querySelector('#result-card');
+const resultsColumn = resultCard.parentElement;
+const emptyReportMarkup = resultCard.innerHTML;
+const emptyReportClass = resultCard.className;
 const segmentList = document.querySelector('#segment-list');
 const errorBox = document.querySelector('#form-error');
+const profileTitle = document.querySelector('#profile-title');
+const startOverButton = document.querySelector('#start-over');
+const submitButton = form.querySelector('[type="submit"]');
+const submitLabel = submitButton.querySelector('span:first-child');
 const noPortfolio = document.querySelector('#no-portfolio');
 const allocationError = document.querySelector('#allocation-error');
 const allocationFields = ['Equity_Allocation_Pct', 'FD_Allocation_Pct', 'Debt_Allocation_Pct'];
 let submittedProfile = null;
 let submittedWithoutPortfolio = null;
 const reportTimeoutMs = 20000;
+const budgetFieldError = Object.assign(document.createElement('small'), {
+  id: 'budget-field-error', className: 'budget-field-error',
+});
+let highlightedBudgetField = null;
+let activeReport = null;
 let exampleSnapshot = null;
 const editsAfterExample = new Set();
 const example = {
@@ -201,7 +213,21 @@ function roundedBudgetShares(shares) {
   }
   return Object.fromEntries(rounded.map(share => [share.category, share.points / 100]));
 }
+const budgetInputs = Object.entries({
+  Monthly_Income_INR: 'Monthly take-home income',
+  Monthly_Expenses_INR: 'Regular expenses',
+  Monthly_Savings_INR: 'Monthly savings',
+  Monthly_Debt_Payment_INR: 'Total monthly loan payments',
+  Monthly_SIP: 'Monthly SIP',
+  Additional_Investment_INR: 'Investments beyond SIP',
+  Other_Expenses_INR: 'Other expenses',
+}).map(([name, label]) => ({ field: form.elements.namedItem(name), label }));
+
 function readBudget(values) {
+  const invalid = budgetInputs.find(({ field }) => (
+    field.validity.badInput || (!field.validity.valid && !field.validity.valueMissing)
+  ));
+  const complete = budgetInputs.every(({ field }) => field.validity.valid);
   const income = Number(values.Monthly_Income_INR);
   const amounts = {
     expenses: Number(values.Monthly_Expenses_INR),
@@ -212,15 +238,16 @@ function readBudget(values) {
   };
   const remaining = (paise(income) - Object.values(amounts).reduce((sum, amount) => sum + paise(amount), 0)) / 100;
   const shares = Object.fromEntries(Object.entries(amounts).map(([key, amount]) => [key, amount / income * 100]));
-  return { income, remaining, shares, amounts };
+  return { income, remaining, shares, amounts, invalid, complete };
 }
 
-function budgetStatus({ income, remaining }) {
+function budgetStatus({ income, remaining, invalid, complete }) {
+  if (invalid) return `${invalid.label}: ${invalid.field.validationMessage}`;
   if (!(income > 0)) return 'Enter your monthly income to start.';
   const amount = Math.abs(remaining).toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 2 });
   if (remaining > 0) return amount + ' left to allocate.';
   if (remaining < 0) return 'Budget exceeds income by ' + amount + '.';
-  return 'Budget matches your monthly income.';
+  return complete ? 'Budget matches your monthly income.' : 'Complete each budget amount. Enter 0 for unused categories.';
 }
 
 function showBudgetComparison(segment, budget) {
@@ -242,11 +269,19 @@ function budgetMatch(segment) {
   return `<div class="budget-match"><span>Monthly behavior · SEBI Investor Survey 2025</span><strong>${escapeHtml(segment.name)}</strong></div>`;
 }
 
+const reportHeading = `<div class="panel-heading">
+  <h2 id="report-title" tabindex="-1">Your report</h2>
+  <div class="heading-actions">
+    <button class="text-button text-button-secondary" type="button" data-edit-budget>Edit budget</button>
+    <button class="text-button" type="button" data-edit-answers>Edit answers</button>
+  </div>
+</div>`;
+
 function showMatch(result, values, budgetSegment, budget) {
   if (!result) {
     resultCard.className = 'panel result-card match-card';
     resultCard.innerHTML = `
-      <h2 id="report-title" tabindex="-1">Your report</h2>
+      ${reportHeading}
       <p id="report-stale" class="form-error" role="status" hidden>Inputs changed. Generate a new report to update these results.</p>
       <div class="report-matches budget-only">${budgetMatch(budgetSegment)}</div>
       ${showBudgetComparison(budgetSegment, budget)}`;
@@ -275,7 +310,7 @@ function showMatch(result, values, budgetSegment, budget) {
 
   resultCard.className = 'panel result-card match-card';
   resultCard.innerHTML = `
-    <h2 id="report-title" tabindex="-1">Your report</h2>
+    ${reportHeading}
     <p id="report-stale" class="form-error" role="status" hidden>Inputs changed. Generate a new report to update these results.</p>
     <div class="report-matches">
       <div><span>Simulated investor match</span><strong>${escapeHtml(result.segment_name)}</strong><small>Cluster ${result.cluster_id} · ${percent(profile.share * 100)} of generated profiles (${profile.size.toLocaleString('en-IN')})</small></div>
@@ -373,7 +408,7 @@ placeBudgetPreview();
 
 function updateBudgetPreview(budget) {
   const total = Object.values(budget.amounts).reduce((sum, amount) => sum + amount, 0);
-  const hasIncome = budget.income > 0;
+  const hasIncome = budget.income > 0 && !budget.invalid;
   const displayedShares = hasIncome && budget.remaining === 0 && Object.values(budget.shares).every(share => share >= 0)
     ? roundedBudgetShares(budget.shares) : budget.shares;
   const scale = Math.max(budget.income, total) || 1;
@@ -395,12 +430,36 @@ function updateBudgetPreview(budget) {
   document.querySelector('#preview-income').textContent = hasIncome ? money(budget.income) : '—';
 }
 
+function showBudgetFieldError(invalid) {
+  const field = invalid?.field ?? null;
+  if (highlightedBudgetField !== field) {
+    highlightedBudgetField?.removeAttribute('aria-invalid');
+    highlightedBudgetField?.removeAttribute('aria-errormessage');
+    budgetFieldError.remove();
+    if (field) {
+      field.setAttribute('aria-invalid', 'true');
+      field.setAttribute('aria-errormessage', budgetFieldError.id);
+      field.previousElementSibling.before(budgetFieldError);
+    }
+    highlightedBudgetField = field;
+  }
+  if (field) budgetFieldError.textContent = field.validationMessage;
+}
+
+function updateSubmitLabel() {
+  if (!submitButton.disabled) {
+    submitLabel.textContent = noPortfolio.checked ? 'Generate budget report' : 'Generate my report';
+  }
+}
+
 function updateLiveProfile() {
   for (const section of form.querySelectorAll('[data-portfolio-field]')) {
     section.hidden = noPortfolio.checked;
     for (const field of section.querySelectorAll('input, select')) field.disabled = noPortfolio.checked;
   }
-  document.querySelector('#no-portfolio-note').hidden = !noPortfolio.checked;
+  profileTitle.textContent = noPortfolio.checked ? 'Budget details' : 'Profile details';
+  document.querySelector('#about-you-title').textContent = noPortfolio.checked ? 'Income and expenses' : 'About you';
+  updateSubmitLabel();
   document.querySelector('.model-groups').hidden = noPortfolio.checked;
   if (resultCard.classList.contains('empty-result')) {
     resultCard.querySelector('p').textContent = noPortfolio.checked
@@ -414,6 +473,8 @@ function updateLiveProfile() {
   const allocation = allocationFields
     .reduce((total, key) => total + (Number(values[key]) || 0), 0);
   const budget = readBudget(values);
+  startOverButton.disabled = !Object.values(values).some(Boolean) && submittedProfile === null;
+  showBudgetFieldError(budget.invalid);
   updateBudgetPreview(budget);
   const required = [...form.querySelectorAll('[required]:enabled')];
   const complete = required.filter(field => field.value !== '').length;
@@ -423,13 +484,17 @@ function updateLiveProfile() {
   const budgetMessage = budgetStatus(budget);
   const budgetTotal = document.querySelector('#sebi-budget-total');
   budgetTotal.textContent = budgetMessage;
-  budgetTotal.classList.toggle('budget-mismatch', budget.income > 0 && budget.remaining !== 0);
+  budgetTotal.classList.toggle('budget-mismatch', Boolean(budget.invalid) || (budget.income > 0 && budget.remaining !== 0));
+  const previewStatus = document.querySelector('#preview-status');
+  previewStatus.hidden = !budget.invalid && !(budget.income > 0);
+  previewStatus.textContent = budgetMessage;
+  previewStatus.classList.toggle('has-error', Boolean(budget.invalid) || budget.remaining < 0);
   const mobileStatus = document.querySelector('#mobile-budget-status');
-  mobileStatus.hidden = !(budget.income > 0);
+  mobileStatus.hidden = !budget.invalid && !(budget.income > 0);
   mobileStatus.textContent = budgetMessage;
-  mobileStatus.classList.toggle('is-balanced', budget.remaining === 0);
+  mobileStatus.classList.toggle('is-balanced', budget.complete && budget.remaining === 0);
   const breakdown = document.querySelector('#budget-breakdown');
-  breakdown.hidden = !(budget.income > 0);
+  breakdown.hidden = Boolean(budget.invalid) || !(budget.income > 0);
   breakdown.innerHTML = Object.entries(budgetFields).map(([key, label]) =>
     '<div><dt>' + label + '</dt><dd>' + money(budget.amounts[key]) + '</dd></div>',
   ).join('');
@@ -449,7 +514,20 @@ function showAllocationError(total) {
 }
 
 function profileSnapshot() {
-  return JSON.stringify([...new FormData(form).entries()]);
+  const answers = [...new FormData(form)].map(([name, value]) => {
+    const field = form.elements.namedItem(name);
+    return [name, field.type === 'number' && field.validity.valid ? field.valueAsNumber : value];
+  });
+  return JSON.stringify(answers);
+}
+
+function showReportError(message, submittingFrom) {
+  errorBox.textContent = message;
+  errorBox.hidden = false;
+  if (submittingFrom && (document.activeElement === submittingFrom || document.activeElement === document.body)) {
+    errorBox.focus({ preventScroll: true });
+    errorBox.scrollIntoView({ block: 'center' });
+  }
 }
 
 function updateReportStatus() {
@@ -461,9 +539,30 @@ function updateReportStatus() {
 
 form.addEventListener('input', event => {
   if (exampleSnapshot && event.target.name) editsAfterExample.add(event.target.name);
+  resultsColumn.classList.add('is-editing');
   updateLiveProfile();
 });
 form.addEventListener('change', updateLiveProfile);
+function focusProfile() {
+  resultsColumn.classList.add('is-editing');
+  profileTitle.focus({ preventScroll: true });
+  profileTitle.scrollIntoView({ block: 'start' });
+}
+
+document.querySelector('.brand').addEventListener('click', event => {
+  event.preventDefault();
+  focusProfile();
+});
+resultCard.addEventListener('click', event => {
+  if (event.target.closest('[data-edit-answers]')) focusProfile();
+  if (event.target.closest('[data-edit-budget]')) {
+    resultsColumn.classList.add('is-editing');
+    const budgetStart = form.elements.Monthly_Income_INR;
+    budgetStart.focus({ preventScroll: true });
+    budgetStart.scrollIntoView({ block: 'center' });
+  }
+});
+
 const exampleButton = document.querySelector('#fill-example');
 const exampleFeedback = document.querySelector('#example-feedback');
 exampleButton.addEventListener('click', () => {
@@ -473,6 +572,7 @@ exampleButton.addEventListener('click', () => {
     exampleSnapshot = { fields, noPortfolio: noPortfolio.checked };
     editsAfterExample.clear();
   }
+  resultsColumn.classList.add('is-editing');
   noPortfolio.checked = false;
   setForm(example);
   updateLiveProfile();
@@ -490,15 +590,33 @@ document.querySelector('#undo-example').addEventListener('click', () => {
   updateLiveProfile();
   exampleButton.focus();
 });
+startOverButton.addEventListener('click', () => {
+  if (!window.confirm('Clear your answers and report and start over?')) return;
+  activeReport?.abort();
+  activeReport = null;
+  submitButton.disabled = false;
+  form.reset();
+  exampleSnapshot = null;
+  editsAfterExample.clear();
+  exampleFeedback.hidden = true;
+  allocationError.hidden = true;
+  submittedProfile = null;
+  submittedWithoutPortfolio = null;
+  resultCard.className = emptyReportClass;
+  resultCard.innerHTML = emptyReportMarkup;
+  resultCard.hidden = false;
+  updateLiveProfile();
+  focusProfile();
+});
+
 updateLiveProfile();
 form.addEventListener('submit', async event => {
   event.preventDefault();
-  const button = form.querySelector('[type="submit"]');
-  if (button.disabled) return;
+  if (submitButton.disabled) return;
   errorBox.hidden = true;
   const data = Object.fromEntries(new FormData(form).entries());
   const budget = readBudget(data);
-  if (!(budget.income > 0) || budget.remaining !== 0) {
+  if (!budget.complete || budget.remaining !== 0) {
     const budgetTotal = document.querySelector('#sebi-budget-total');
     budgetTotal.focus({ preventScroll: true });
     budgetTotal.scrollIntoView({ block: 'center' });
@@ -521,38 +639,45 @@ form.addEventListener('submit', async event => {
   }
   const profile = noPortfolio.checked ? null : data;
   const snapshot = profileSnapshot();
+  const submittingFrom = document.activeElement;
   const controller = new AbortController();
+  activeReport = controller;
   const timeout = setTimeout(() => controller.abort(), reportTimeoutMs);
-  button.disabled = true;
-  button.querySelector('span:first-child').textContent = 'Analysing your profile…';
+  submitButton.disabled = true;
+  submitLabel.textContent = 'Generating report…';
   try {
     const response = await fetch('/report', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ profile, budget: budget.shares }), signal: controller.signal });
     const result = await response.json();
+    if (activeReport !== controller) return;
     if (snapshot !== profileSnapshot()) {
-      errorBox.textContent = 'Your answers changed while the report was loading. Generate it again with your latest answers.';
-      errorBox.hidden = false;
+      showReportError('Your answers changed while the report was loading. Generate it again with your latest answers.');
       return;
     }
     if (!response.ok) {
-      errorBox.textContent = typeof result.detail === 'string' ? result.detail : 'Check your profile and budget entries, then try again.';
-      errorBox.hidden = false;
+      const message = typeof result.detail === 'string' ? result.detail : 'Check your profile and budget entries, then try again.';
+      showReportError(message, submittingFrom);
       return;
     }
     submittedProfile = snapshot;
     submittedWithoutPortfolio = profile === null;
+    resultsColumn.classList.remove('is-editing');
     showMatch(result.investor_cluster, data, result.sebi_budget.segment, budget.shares);
     updateReportStatus();
     resultCard.querySelector('#report-title').focus({ preventScroll: true });
     resultCard.scrollIntoView({ block: 'start' });
   } catch {
-    errorBox.textContent = controller.signal.aborted
+    if (activeReport !== controller) return;
+    const message = controller.signal.aborted
       ? 'The report took too long to load. Try generating it again.'
       : 'The report could not load. Try generating it again.';
-    errorBox.hidden = false;
+    showReportError(message, snapshot === profileSnapshot() ? submittingFrom : null);
   } finally {
     clearTimeout(timeout);
-    button.disabled = false;
-    button.querySelector('span:first-child').textContent = 'Generate my report';
+    if (activeReport === controller) {
+      activeReport = null;
+      submitButton.disabled = false;
+      updateSubmitLabel();
+    }
   }
 });
 
