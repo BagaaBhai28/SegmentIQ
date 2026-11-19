@@ -2,7 +2,9 @@
 
 SegmentIQ is an educational investor profiling app. Enter a profile and a monthly budget to get a simulated investor group and a comparison with household budgets from the SEBI Investor Survey 2025.
 
-**[Try the live app](https://segmentiq-khaki.vercel.app/)** · [Interactive API docs](https://segmentiq-khaki.vercel.app/docs)
+**[Try SegmentIQ live](https://segmentiq-khaki.vercel.app/)** · [Read the project guide](docs/project-guide.md) · [Explore the API](https://segmentiq-khaki.vercel.app/docs)
+
+![SegmentIQ sample profile with a live monthly budget chart showing 100% allocation](docs/images/budget-form.png)
 
 ## Try a report
 
@@ -10,7 +12,7 @@ SegmentIQ is an educational investor profiling app. Enter a profile and a monthl
 2. Allocate your monthly take-home income across regular expenses, savings, loan repayments, investments, and other expenses. The live chart updates as you enter amounts. For the investor profile, equity, fixed deposits, and debt assets must total 100%.
 3. Select **Generate my report**. If you select **No current portfolio**, the form asks only for budget details and returns the budget comparison.
 
-The example returns **Growth-accumulator** as the simulated investor match and **Near-zero loan repayments** as the survey budget comparison. The report shows your budget shares alongside the matched group's averages and, for a full profile, explains how your values compare with the simulated group.
+The example returns **Growth-accumulator** as the simulated investor match and **Near-zero loan repayments** as the survey budget comparison. The [annotated walkthrough](docs/project-guide.md#read-the-report) explains what each part of the report means.
 
 ## What the results represent
 
@@ -65,7 +67,7 @@ Invoke-RestMethod http://127.0.0.1:8000/report -Method Post -ContentType 'applic
 | [`frontend/`](frontend/) | Form, live budget chart, and report |
 | [`backend/`](backend/) | FastAPI routes, validation, and aggregate SEBI model |
 | [`ml/`](ml/) | Synthetic data generator, training, inference, and example input |
-| [`docs/`](docs/) | Architecture, scope, roadmap, and historical research |
+| [`docs/`](docs/) | Project guide, architecture, scope, roadmap, and historical research |
 | [`pyproject.toml`](pyproject.toml) and [`vercel.json`](vercel.json) | Vercel build and runtime settings |
 
 Vercel builds from GitHub `main` and regenerates the synthetic artifacts. Git tracks the aggregate SEBI model and workbook hash. The original workbook, input CSVs, generated datasets, and local artifacts stay outside version control.
