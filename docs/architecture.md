@@ -1,50 +1,35 @@
 # SegmentIQ architecture
 
-## Current system
-
-SegmentIQ is a small, single-service application. FastAPI serves the browser UI, validates requests, loads the trained scikit-learn pipeline, and returns descriptive results. The frontend is plain HTML, CSS, and JavaScript; it does not have a separate Node build.
+FastAPI serves the browser UI and runs both inference paths in one service. The browser uses HTML, CSS, and JavaScript directly.
 
 ```mermaid
-flowchart LR
-    subgraph Build[Data and model build]
-        A[Seeded generator] --> B[Processed synthetic CSV]
-        B --> C[Feature preprocessing]
-        C --> D[K-Means selection and fit]
-        D --> E[Model, contract, profiles, PCA]
-    end
-    subgraph App[FastAPI application]
-        F[HTML, CSS, JavaScript] -->|GET /segments| G[Group summaries]
-        F -->|POST /predict| H[Profile schema validation]
-        H --> I[Saved preprocessing and K-Means]
-        I --> J[Assignment and profile response]
-    end
-    E --> G
-    E --> I
+flowchart TD
+    Form[Profile and monthly budget form] --> Report[POST /report]
+    Report --> Check[Validate percentages and shared budget fields]
+    Check -->|Full profile| Sim[Synthetic investor match]
+    Check -->|Both modes| Survey[SEBI household budget comparison]
+    Sim --> Result[One report]
+    Survey --> Result
+    Generator[Seeded generator and training] --> Sim
+    Aggregate[Bundled aggregate survey model] --> Survey
 ```
 
-## Components
+## Synthetic investor match
 
-- `ml/src/generate_synthetic_dataset.py` creates a reproducible, 1,600-row synthetic scenario dataset. Its archetype label is not a model feature.
-- `ml/src/train.py` scales numeric columns, one-hot encodes categorical columns, compares K=2 through K=8 over five seeds, fits the selected K-Means model, and writes local artifacts.
-- `ml/src/predict.py` checks a profile against the generated feature contract and returns its cluster, centroid distance, PCA coordinates, and descriptive profile.
-- `backend/main.py` defines the FastAPI routes, validates the 16 profile fields, and serves `frontend/`.
-- `frontend/` renders the profile form, segment summaries, and model response in the browser.
-- `main.py`, `pyproject.toml`, and `vercel.json` provide the Vercel application entry point and deployment build configuration.
+- `ml/src/generate_synthetic_dataset.py` generates 1,600 scenarios and reconciles expenses, repayments, investing, and savings to income.
+- `ml/src/train.py` scales numeric features, one-hot encodes categorical features, and compares K-means candidates across five seeds. The current fit uses four clusters. Scenario labels help describe the resulting clusters after fitting.
+- `ml/src/predict.py` loads the saved model and returns the closest cluster, descriptive group statistics, centroid distance, and PCA coordinates. Distance measures separation in transformed feature space. PCA provides a two-dimensional projection for exploration.
+- Vercel regenerates the model during its build. The generated records and runtime artifacts live under ignored `ml/data/processed/` and `ml/artifacts/`.
 
-## Generated artifacts
+## SEBI budget comparison
 
-Training writes the fitted preprocessor and model, PCA projection, feature contract, and group profiles to ignored `ml/artifacts/`. The generated dataset and row-level cluster assignments go to ignored `ml/data/processed/`. These files are created locally by the documented setup commands and during the Vercel build; they are not committed to Git.
+- The frontend converts the entered monthly amounts to five shares. The investment share combines SIP and other investments.
+- `backend/sebi_budget.py` validates and normalizes the shares, applies the square-root transform, and finds the closest saved center.
+- `backend/sebi_budget_model.json` stores three centers, reference averages from held-out interviews, model metadata, and the workbook hash. The averages describe eligible households in the investor sample.
+- Budget-only requests use `profile: null`. This path compares the budget with the survey reference groups and skips the synthetic profile model.
 
-## Model contract
+## Contracts and boundaries
 
-Training and inference share one preprocessing/model bundle and a generated feature contract. Numeric and categorical field lists live in `ml/src/train.py`; the API request schema in `backend/main.py` validates the same 16 fields. Update both when changing the form or feature schema. The synthetic archetype label is excluded from model features and used only for post-cluster descriptive checks.
+`backend/main.py` defines the request schemas and routes, validates shared values in a combined request, and serves `frontend/`. Keep the browser form, API schema, synthetic feature contract, and example profile aligned when changing inputs.
 
-PCA is used to provide a two-dimensional projection for exploration. It does not define the clusters. Cluster IDs are arbitrary labels, and the distance to a centroid is a distance in transformed feature space—not a probability or confidence estimate.
-
-## Boundaries and non-goals
-
-- No account, database, or persistence layer exists. Submitted profiles are not stored by the application.
-- No external model API or market-data service is used.
-- The source CSV reviewed in the research notes is separate from the deployed synthetic pipeline.
-- The app is an educational prototype, not an investor suitability, portfolio recommendation, or financial-advice system.
-- Future persistence or real-data support requires an explicit privacy, data provenance, license, and access-control design first.
+The application processes submissions in memory. It uses no account system, database, or external model service. Both results are descriptive and intended for exploration.

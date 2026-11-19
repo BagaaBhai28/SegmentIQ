@@ -2,21 +2,22 @@
 
 ## Current purpose
 
-Provide an academic demonstration of how an unsupervised clustering pipeline can transform a validated financial profile into an exploratory group match and descriptive summary.
+Provide an academic demonstration of how unsupervised clustering can describe a simulated investor profile and compare a monthly household budget with survey reference groups.
 
 ## Current capabilities
 
 - Reproducibly generate a clearly labeled synthetic investor-profile dataset.
 - Compare candidate cluster counts and seed stability using a documented preprocessing contract.
 - Accept and validate a profile through a FastAPI API and browser form.
-- Return the cluster assignment and descriptive reference statistics without saving the submitted profile.
-- Show clear caveats that the result is synthetic and not a validated investor assessment.
+- Return the simulated investor match and SEBI budget comparison in one report, or a budget comparison alone.
+- Validate the budget total and check that shared fields agree in a combined request.
+- Identify the source and intended interpretation of each result. Process submissions without storing them in the app.
 - Deploy the application to Vercel from the GitHub repository.
 
 ## Out of scope
 
 - Investor suitability, personalized investment recommendations, or financial advice.
-- Claims that the generated groups describe real investors.
+- Claims that the generated groups describe real investors or that the survey budget model has been validated for people without a portfolio.
 - Market prediction, portfolio optimization, or live market data.
 - User accounts, profile history, or persistence in a database.
 - Redistribution of the source CSV without verified provenance and licensing.

@@ -1,124 +1,73 @@
 # SegmentIQ
 
-SegmentIQ produces one report from the original investor profile and five monthly budget shares calculated from the amounts entered in the form. The report shows the four-group synthetic model match alongside the three-group SEBI Investor Survey 2025 budget comparison. The survey group averages describe the holdout. Matches for new users are exploratory.
+SegmentIQ is an educational investor profiling app. Enter a profile and a monthly budget to get a simulated investor group and a comparison with household budgets from the SEBI Investor Survey 2025.
 
-Enter regular expenses, loan repayments, savings, SIP, other investments, and other expenses once. The monthly budget must reconcile to the entered income. The form submits both inputs to `POST /report`, which checks that the overlapping fields agree and that the investment share covers the SIP. Selecting **No current portfolio** sends a budget-only request with `profile: null`. `/predict` serves the synthetic model. `/sebi/predict` uses the five budget shares and accepts the legacy `holdings` field for compatibility.
+**[Try the live app](https://segmentiq-khaki.vercel.app/)** · [Interactive API docs](https://segmentiq-khaki.vercel.app/docs)
 
-The bundled SEBI model uses the five budget fields in this order: monthly expenses, savings, loan repayments, investment, and other expenses. It applies a square-root transform to each fraction before comparing against the fitted K-means centers. The model file records the workbook hash, seed, training size, and holdout summaries. The raw survey workbook is kept outside the app. SEBI defines the budget question at the household level. The bundled comparison groups were fitted on eligible investor-sample interviews, so budget-only users are compared with that reference sample. Model applicability to households without a portfolio has not been established.
+## Try a report
 
-[![Python 3.13](https://img.shields.io/badge/Python-3.13-3776AB?logo=python&logoColor=white)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/API-FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-[![scikit--learn](https://img.shields.io/badge/ML-scikit--learn-F7931E?logo=scikitlearn&logoColor=white)](https://scikit-learn.org/)
+1. Select **Use example** to explore the report, or enter your own details.
+2. Allocate your monthly take-home income across regular expenses, savings, loan repayments, investments, and other expenses. The live chart updates as you enter amounts. For the investor profile, equity, fixed deposits, and debt assets must total 100%.
+3. Select **Generate my report**. If you select **No current portfolio**, the form asks only for budget details and returns the budget comparison.
 
-The synthetic generator calculates savings after regular expenses, loan repayments, SIP, and other expenses. The regenerated 1,600 budgets reconcile to income. The corrected run selected four clusters (mean silhouette 0.3061, mean seed stability ARI 1.0000). All 1,600 assignments matched the previous run after aligning cluster IDs.
+The example returns **Growth-accumulator** as the simulated investor match and **Near-zero loan repayments** as the survey budget comparison. The report shows your budget shares alongside the matched group's averages and, for a full profile, explains how your values compare with the simulated group.
 
-## Demo
+## What the results represent
 
-- **Live app:** [segmentiq-khaki.vercel.app](https://segmentiq-khaki.vercel.app/)
-- **API health:** [/health](https://segmentiq-khaki.vercel.app/health)
-- **Segment summaries:** [/segments](https://segmentiq-khaki.vercel.app/segments)
-- **Interactive API docs:** [/docs](https://segmentiq-khaki.vercel.app/docs)
+| Result | Reference data | How to read it |
+|---|---|---|
+| Simulated investor match | 1,600 reproducibly generated profiles | The closest of four simulated groups, with descriptive averages and common characteristics. |
+| Monthly budget comparison | 17,824 eligible investor-sample interviews from the SEBI Investor Survey 2025 | The closest of three survey budget groups. Reference averages come from 1,800 held-out interviews. |
 
-## What it does
+The synthetic model uses 11 numeric and five categorical features. It selected four clusters from K=2 through K=8 across five seeds, with mean silhouette **0.3061** and mean seed stability **ARI 1.0000**. The generator allocates expenses, borrowing repayments, investing, and savings as separate uses of income.
 
-- Collects age, location tier, employment, income, expenses, savings, debt, SIP contribution, asset allocation, experience, literacy, risk comfort, and financial goal.
-- Checks profile bounds and consistency, including a 100% total for equity, fixed deposits, and debt assets.
-- Applies the same fitted preprocessing and clustering pipeline used during model training.
-- Shows the closest simulated group and its descriptive profile statistics.
-- Provides `/health`, `/segments`, and `/predict` endpoints through FastAPI.
-- Builds the generated data and model artifacts as part of a Vercel deployment.
-
-## How the pipeline works
-
-```mermaid
-flowchart LR
-    A[Seeded synthetic profile generator] --> B[1,600 generated profiles]
-    B --> C[Scale numeric fields and one-hot encode categories]
-    C --> D[Evaluate K=2 to K=8 across five seeds]
-    D --> E[Train and save selected K-Means pipeline]
-    E --> F[FastAPI validates profile and predicts cluster]
-    F --> G[Browser shows simulated group and reference statistics]
-```
-
-The synthetic archetype column is excluded from model features. It is used only after clustering to describe how closely a cluster lines up with the generator’s scenarios. The model compares candidate cluster counts using mean silhouette score, with seed stability as a tie-breaker. Four archetypes are built into the current generator and the deployed explorer displays four groups; this is a demonstration design, not evidence that real investor data has four natural clusters.
-
-The supplied `Indian_Personal_Finance_Behavior_Dataset_2026.csv` is **not included, not used by the deployed app, and not assumed to be real or licensed**. Earlier dataset and notebook reviews are retained as research notes. See [the dataset report](docs/dataset_report.md) and [the model report](docs/model_report.md) for limitations and previous experiments.
+The SEBI model compares five budget shares after a square-root transform. The published survey describes these budgets at the household level. Applicability to people without a portfolio has not been established. The app provides descriptive comparisons for exploration. Investment suitability and performance require additional information. [SEBI Investor Survey 2025](https://www.sebi.gov.in/reports-and-statistics/research/jan-2026/investor-survey-2025-_99170.html)
 
 ## Run locally
 
-Requires Python 3.13. From the repository root, create a virtual environment, install the ML and API dependencies, generate the demo data and model, then start the app:
+Install Python 3.13 and run these commands from the repository root on Windows.
 
 ```powershell
 py -3.13 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r ml/requirements.txt
-.\.venv\Scripts\python.exe ml/src/generate_synthetic_dataset.py
-.\.venv\Scripts\python.exe ml/src/train.py
+.\.venv\Scripts\python.exe -m ml.src.generate_synthetic_dataset
+.\.venv\Scripts\python.exe -m ml.src.train
 .\.venv\Scripts\python.exe -m uvicorn backend.main:app --reload
 ```
 
-Open [http://127.0.0.1:8000](http://127.0.0.1:8000). FastAPI’s interactive API reference is at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
-
-No environment variables, database, or frontend package installation are required for the current demo. The browser files are served directly by FastAPI.
-
-### Try the prediction API
-
-With the local server running, send the example profile:
-
-```powershell
-Invoke-RestMethod -Method Post `
-  -Uri http://127.0.0.1:8000/predict `
-  -ContentType 'application/json' `
-  -Body (Get-Content ml/examples/profile.json -Raw)
-```
-
-`/predict` returns a cluster ID, a simulated group name, distance to the cluster centroid, PCA coordinates, and the cluster’s reference profile. Distance is not a confidence score or probability.
+Open [the local app](http://127.0.0.1:8000/) or [the local API docs](http://127.0.0.1:8000/docs). FastAPI serves the HTML, CSS, and JavaScript directly. The app requires no frontend build, database, or API key.
 
 ## API
 
-| Method | Path | Purpose |
+| Method | Path | Returns |
 |---|---|---|
-| `GET` | `/health` | Reports whether the required generated model artifacts are available. |
-| `GET` | `/segments` | Returns the current simulated group summaries and a data disclaimer. |
-| `POST` | `/predict` | Validates a profile and returns its exploratory cluster assignment. |
-| `GET` | `/docs` | Serves the interactive OpenAPI documentation. |
+| GET | `/health` | Synthetic model artifact readiness |
+| GET | `/segments` | Descriptive summaries of the simulated groups |
+| POST | `/report` | Both results for `{profile, budget}`, or a budget result when `profile` is `null` |
+| POST | `/predict` | A simulated group and its descriptive summary |
+| POST | `/sebi/predict` | A survey budget comparison for `{budget}` |
 
-Invalid profiles return HTTP `422`. The API checks category values and numeric ranges, and rejects inconsistent allocation totals, debt payments for `No Debt`, and experience beyond years since age 18.
+The budget object contains percentage shares named `expenses`, `savings`, `loan_repayments`, `investment`, and `other`. For a combined report, shared values in the budget and profile must agree, and the investment share must cover the monthly SIP. Invalid requests return HTTP 422.
 
-## Repository map
+To try the combined report on the local server using the same sample as the browser:
 
-```text
-SegmentIQ/
-├── backend/
-│   └── main.py                  # FastAPI app, request schema, routes, static hosting
-├── frontend/
-│   ├── index.html               # Profile explorer markup
-│   └── assets/                  # Browser JavaScript and CSS
-├── ml/
-│   ├── examples/                # Example inference profile
-│   ├── reports/                 # Small aggregate experiment outputs
-│   ├── src/                     # Dataset audit, generator, training, and inference
-│   └── README.md                # ML workflow and generated-file guide
-├── docs/                        # Architecture, scope, roadmap, and research notes
-├── main.py                      # Vercel FastAPI entry point
-├── pyproject.toml               # Python project dependencies and Vercel build steps
-├── requirements.txt             # Runtime dependencies used by Vercel
-└── vercel.json                  # Vercel framework and function configuration
+```powershell
+$profile = Get-Content ml/examples/profile.json -Raw | ConvertFrom-Json
+$budget = @{ expenses = 53.125; savings = 20; loan_repayments = 0; investment = 18.75; other = 8.125 }
+$body = @{ profile = $profile; budget = $budget } | ConvertTo-Json -Depth 4
+Invoke-RestMethod http://127.0.0.1:8000/report -Method Post -ContentType 'application/json' -Body $body
 ```
 
-Generated data under `ml/data/` and model artifacts under `ml/artifacts/` are intentionally ignored by Git. The Vercel build regenerates them; a fresh local checkout must run the generator and trainer before starting the API. The original CSV, local environments, secrets, and uploaded deployment bundle are also excluded from version control.
+## Repository guide
 
-## Documentation
+| Path | Contents |
+|---|---|
+| [`frontend/`](frontend/) | Form, live budget chart, and report |
+| [`backend/`](backend/) | FastAPI routes, validation, and aggregate SEBI model |
+| [`ml/`](ml/) | Synthetic data generator, training, inference, and example input |
+| [`docs/`](docs/) | Architecture, scope, roadmap, and historical research |
+| [`pyproject.toml`](pyproject.toml) and [`vercel.json`](vercel.json) | Vercel build and runtime settings |
 
-- [Architecture](docs/architecture.md): current app boundaries and data flow.
-- [Requirements and scope](docs/requirements.md): what this demo does and what remains out of scope.
-- [Roadmap](docs/roadmap.md): completed, deferred, and future work.
-- [Dataset audit](docs/dataset_report.md): schema and reported data-quality concerns for the separate source CSV.
-- [Model experiments](docs/model_report.md): earlier feature and cluster-count comparisons, with caveats.
-- [Notebook audit](docs/notebook-audit.md) and [dataset audit notes](docs/dataset-audit-notes.md): review notes, not the deployed training pipeline.
-- [Contributing](CONTRIBUTING.md): repository and change guidelines.
+Vercel builds from GitHub `main` and regenerates the synthetic artifacts. Git tracks the aggregate SEBI model and workbook hash. The original workbook, input CSVs, generated datasets, and local artifacts stay outside version control.
 
-## Future data and model work
-
-Before using empirical investor data, establish its source, license, collection method, and intended use. Keep the original file local unless redistribution is permitted. Document cleaning decisions, rerun the evaluation across candidate `K` values and seeds, and update training and inference together through the shared feature contract. Do not generate extra features just to force a higher cluster count.
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow and [the roadmap](docs/roadmap.md) for the current project stages.
+[Architecture](docs/architecture.md) · [Scope](docs/requirements.md) · [Roadmap](docs/roadmap.md) · [Contributing](CONTRIBUTING.md)
