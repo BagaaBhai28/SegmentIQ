@@ -1,0 +1,70 @@
+{
+  "source": "SEBI Investor Survey 2025",
+  "model_version": "sebi-budget-k3-v1",
+  "matched_rows": 17824,
+  "training_rows": 16024,
+  "holdout_rows": 1800,
+  "workbook_sha256": "03ec6230d10261b2a8ee4b819093940fc3223b6025599f31994a6bbc078a4229",
+  "transform": "sqrt(share / 100)",
+  "seed": 2025,
+  "starts": 50,
+  "segments": [
+    {
+      "id": 0,
+      "name": "Higher savings and loan repayments",
+      "center": [
+        0.47688410408094095,
+        0.4417827402175562,
+        0.40127425507200326,
+        0.4317256490570461,
+        0.4413082189545491
+      ],
+      "holdout_count": 758,
+      "average": {
+        "expenses": 23.011873350923484,
+        "savings": 20.102902374670183,
+        "loan_repayments": 16.80211081794195,
+        "investment": 19.601583113456464,
+        "other": 20.481530343007915
+      }
+    },
+    {
+      "id": 1,
+      "name": "Near-zero loan repayments",
+      "center": [
+        0.6569633024227998,
+        0.3827833606993715,
+        0.001272029715074228,
+        0.4142853617679392,
+        0.4337089097223783
+      ],
+      "holdout_count": 574,
+      "average": {
+        "expenses": 44.68815331010453,
+        "savings": 16.418118466898953,
+        "loan_repayments": 0.0313588850174216,
+        "investment": 18.682926829268293,
+        "other": 20.179442508710803
+      }
+    },
+    {
+      "id": 2,
+      "name": "Higher monthly expenses",
+      "center": [
+        0.6971835954731989,
+        0.3525484841988416,
+        0.32564223803763376,
+        0.3499720096980694,
+        0.3507978547524701
+      ],
+      "holdout_count": 468,
+      "average": {
+        "expenses": 49.81196581196581,
+        "savings": 13.027777777777779,
+        "loan_repayments": 11.074786324786325,
+        "investment": 12.826923076923077,
+        "other": 13.258547008547009
+      }
+    }
+  ]
+}

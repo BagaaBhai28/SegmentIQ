@@ -50,7 +50,18 @@ def load_dataset(path: Path) -> pd.DataFrame:
     missing = [column for column in required if column not in frame.columns]
     if missing:
         raise ValueError(f"Dataset is missing required fields: {missing}")
+    if path.resolve() == DEFAULT_DATASET and "Other_Expenses_INR" not in frame:
+        raise ValueError("Regenerate the synthetic dataset to use the corrected savings definition.")
     frame[NUMERIC_FEATURES] = frame[NUMERIC_FEATURES].apply(pd.to_numeric, errors="raise")
+    if "Other_Expenses_INR" in frame:
+        other_expenses = pd.to_numeric(frame["Other_Expenses_INR"], errors="raise")
+        remaining = (
+            frame["Monthly_Income_INR"] - frame["Monthly_Expenses_INR"] - frame["Monthly_SIP"]
+            - frame["Monthly_Debt_Payment_INR"] - other_expenses
+        )
+        savings = frame["Monthly_Income_INR"] * frame["Savings_Percentage"] / 100
+        if not np.isfinite(other_expenses).all() or not (remaining - savings).abs().lt(0.01).all():
+            raise ValueError("Monthly savings and spending must reconcile to income.")
     if not np.isfinite(frame[NUMERIC_FEATURES].to_numpy(dtype=float)).all():
         raise ValueError("Numeric features contain non-finite values")
     if frame[CATEGORICAL_FEATURES + [TARGET_FIELD]].eq("").any().any():
@@ -130,7 +141,11 @@ def main() -> None:
         json.dumps(profiles, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )
     contract = {
-        "contract_version": "2.0.0",
+        "contract_version": "2.1.0",
+        "savings_definition": (
+            "Share of income set aside as savings after expenses, debt, and investing."
+            if "Other_Expenses_INR" in frame else "Savings percentage supplied by the training dataset."
+        ),
         "selected_k": selected_k,
         "numeric_features": NUMERIC_FEATURES,
         "categorical_features": CATEGORICAL_FEATURES,
@@ -139,7 +154,7 @@ def main() -> None:
             for field in CATEGORICAL_FEATURES
         },
         "excluded_from_model": [TARGET_FIELD],
-        "selection_method": "Highest mean silhouette across K=2..8 over five seeds; synthetic label excluded from features.",
+        "selection_method": f"Highest mean silhouette across K={args.min_k}..{args.max_k} over five seeds. Synthetic labels are excluded from features.",
         "dataset_kind": "Synthetic scenario data; archetype names identify simulated groups only.",
     }
     (args.artifacts_dir / "feature_contract.json").write_text(

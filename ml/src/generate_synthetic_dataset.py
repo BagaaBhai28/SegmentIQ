@@ -21,6 +21,7 @@ ARCHETYPES = [
 def generate_dataset(rows: int = ROWS, seed: int = SEED) -> pd.DataFrame:
     rng = np.random.default_rng(seed)
     groups = rng.integers(0, 4, rows)
+    discretionary_rng = np.random.default_rng(seed + 1)
     age_means = [53, 40, 30, 24]
     income_medians = [85_000, 125_000, 185_000, 52_000]
     expense_means = [.58, .63, .52, .76]
@@ -33,13 +34,13 @@ def generate_dataset(rows: int = ROWS, seed: int = SEED) -> pd.DataFrame:
     for group in groups:
         group = int(group)
         age = int(np.clip(rng.normal(age_means[group], [5, 5, 4, 2][group]), 21, 65))
-        income = float(np.clip(rng.lognormal(np.log(income_medians[group]), .24), 20_000, 500_000))
+        income = round(float(np.clip(rng.lognormal(np.log(income_medians[group]), .24), 20_000, 500_000)) / 100) * 100
         expense_rate = float(np.clip(rng.normal(expense_means[group], .045), .38, .90))
         expenses = round(income * expense_rate / 100) * 100
-        savings = (income - expenses) / income * 100
+        after_expenses = income - expenses
         experience = int(np.clip(round(rng.normal(experience_means[group], [3, 2.5, 2, 1][group])), 0, age - 18))
         literacy = int(np.clip(round(rng.normal(literacy_means[group], .8)), 1, 10))
-        sip = round(min(income * savings / 100 * .8, income * sip_rates[group] * rng.lognormal(0, .18)) / 100) * 100
+        sip = round(min(after_expenses * .8, income * sip_rates[group] * rng.lognormal(0, .18)) / 100) * 100
         allocation = rng.dirichlet(np.asarray(allocation_means[group]) * 130) * 100
 
         debt_status = rng.choice(
@@ -47,6 +48,12 @@ def generate_dataset(rows: int = ROWS, seed: int = SEED) -> pd.DataFrame:
             p=[[.30, .50, .05, .15], [.45, .35, .07, .13], [.62, .22, .06, .10], [.50, .10, .15, .25]][group],
         )
         debt_payment = 0 if debt_status == "No Debt" else round(income * rng.uniform(.07, .17) / 100) * 100
+        debt_payment = min(debt_payment, after_expenses)
+        after_debt = after_expenses - debt_payment
+        sip = min(sip, after_debt)
+        after_sip = after_debt - sip
+        other_expenses = round(after_sip * discretionary_rng.uniform(.15, .45) / 100) * 100
+        savings = (after_sip - other_expenses) / income * 100
         city = rng.choice(
             ["Tier 1", "Tier 2", "Tier 3"],
             p=[[.25, .45, .30], [.45, .38, .17], [.55, .32, .13], [.18, .34, .48]][group],
@@ -69,7 +76,8 @@ def generate_dataset(rows: int = ROWS, seed: int = SEED) -> pd.DataFrame:
             "Employment_Type": employment,
             "Monthly_Income_INR": round(income / 100) * 100,
             "Monthly_Expenses_INR": expenses,
-            "Savings_Percentage": round(savings, 1),
+            "Savings_Percentage": round(savings, 8),
+            "Other_Expenses_INR": other_expenses,
             "Debt_Status": debt_status,
             "Monthly_Debt_Payment_INR": debt_payment,
             "Monthly_SIP": sip,

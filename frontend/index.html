@@ -3,71 +3,82 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#f6f7f4" />
+    <meta name="theme-color" content="#f6f5ef" />
     <title>SegmentIQ — Investor profile explorer</title>
-    <link rel="stylesheet" href="/assets/styles.css?v=2" />
-    <script src="/assets/app.js?v=2" defer></script>
+    <link rel="stylesheet" href="/assets/styles.css?v=8" />
+    <script src="/assets/app.js?v=17" defer></script>
   </head>
   <body>
     <header class="topbar">
-      <a class="brand" href="/" aria-label="SegmentIQ home"><span class="brand-mark">S</span> SegmentIQ</a>
-      <span class="demo-tag"><span class="status-dot"></span> Synthetic data demo</span>
+      <a class="brand" href="/" aria-label="SegmentIQ home"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>Segment<strong>IQ</strong></span></a>
+      <div class="completion"><label for="completion-meter">Fields filled</label><progress id="completion-meter" value="0" max="100"></progress><span id="completion-value">0%</span></div>
     </header>
     <main>
       <section class="intro">
-        <p class="eyebrow">INVESTOR PROFILE EXPLORER</p>
-        <h1>Explore a profile’s<br /><span>financial pattern.</span></h1>
-        <p class="intro-copy">Build a sample profile and get a clear readout of your cash flow, investing pattern, and how it compares with a simulated group.</p>
+        <h1>Investor <em>profile</em></h1>
       </section>
-      <div class="notice" role="note"><span class="notice-icon">i</span><p>This demo uses generated data and simulated groups. Results are for exploring the product only—not financial advice or a real risk assessment.</p></div>
       <section class="workspace">
         <form id="profile-form" class="panel form-panel">
-          <div class="panel-heading"><div><p class="eyebrow">PROFILE DETAILS</p><h2>Your sample profile</h2></div><button class="text-button" type="button" id="fill-example">Use example</button></div>
+          <div class="panel-heading"><h2>Profile details</h2><button class="text-button" type="button" id="fill-example">Use example <span aria-hidden="true">↗</span></button></div>
+          <p id="example-feedback" class="example-feedback" hidden><span role="status">Example loaded.</span> <button class="text-button" type="button" id="undo-example">Undo</button></p>
+          <p id="mobile-budget-status" class="mobile-budget-status" hidden></p>
+          <label class="portfolio-option"><input type="checkbox" id="no-portfolio" name="No_Portfolio" /> No current portfolio</label>
+          <p id="no-portfolio-note" class="field-note" hidden>Compare your budget with households in the SEBI investor sample.</p>
           <fieldset><legend>About you</legend><div class="field-grid">
-            <label>Age<input name="Age" type="number" min="18" max="100" value="32" required /></label>
-            <label>City tier<select name="City_Tier"><option>Tier 1</option><option>Tier 2</option><option>Tier 3</option></select></label>
-            <label>Employment<select name="Employment_Type"><option>Salaried</option><option>Self-Employed</option><option>Student</option><option>Unemployed</option></select></label>
-            <label>Monthly income <span class="unit">₹</span><input name="Monthly_Income_INR" type="number" min="0" value="160000" required /></label>
-            <label>Monthly expenses <span class="unit">₹</span><input name="Monthly_Expenses_INR" type="number" min="0" value="85000" required /></label>
-            <label>Monthly savings <span class="unit">%</span><input name="Savings_Percentage" type="number" min="0" max="100" step="0.1" value="46.9" required /></label>
-            <label>Debt status<select name="Debt_Status"><option>No Debt</option><option>Home Loan</option><option>Credit Card Debt</option><option>Personal Loan</option></select></label>
-            <label>Monthly debt payment <span class="unit">₹</span><input name="Monthly_Debt_Payment_INR" type="number" min="0" value="0" required /></label>
+            <label data-portfolio-field>Age<input name="Age" type="number" min="18" max="100" required /></label>
+            <label data-portfolio-field>City tier<select name="City_Tier" required><option value="" disabled selected>Select an option</option><option>Tier 1</option><option>Tier 2</option><option>Tier 3</option></select></label>
+            <label data-portfolio-field>Employment<select name="Employment_Type" required><option value="" disabled selected>Select an option</option><option>Salaried</option><option>Self-Employed</option><option>Student</option><option>Unemployed</option></select></label>
+            <label>Monthly take-home income <span class="unit">₹</span><input name="Monthly_Income_INR" type="number" max="10000000" min="0.01" step="0.01" required /></label>
+            <label>Regular expenses <span class="unit">₹</span><input name="Monthly_Expenses_INR" type="number" max="10000000" min="0" step="0.01" required /></label>
+            <label>Monthly savings <span class="unit">₹</span><input name="Monthly_Savings_INR" type="number" min="0" step="0.01" required /></label>
+            <label data-portfolio-field>Main debt type<select name="Debt_Status" required><option value="" disabled selected>Select an option</option><option>No Debt</option><option>Home Loan</option><option>Credit Card Debt</option><option>Personal Loan</option></select></label>
+            <label>Total monthly loan payments <span class="unit">₹</span><input name="Monthly_Debt_Payment_INR" type="number" max="10000000" min="0" step="0.01" required /></label>
           </div></fieldset>
           <fieldset><legend>Investment habits</legend><div class="field-grid">
-            <label>Monthly SIP <span class="unit">₹</span><input name="Monthly_SIP" type="number" min="0" value="30000" required /></label>
-            <label>Experience <span class="unit">years</span><input name="Investment_Experience_Years" type="number" min="0" max="82" step="0.5" value="6" required /></label>
-            <label>Financial literacy <span class="unit">/ 10</span><input name="Financial_Literacy_Score" type="number" min="1" max="10" value="8" required /></label>
-            <label>Risk comfort<select name="Risk_Tolerance_Level"><option>Low</option><option>Medium</option><option selected>High</option></select></label>
-            <label>Primary goal<select name="Primary_Financial_Goal"><option>Wealth Accumulation</option><option>Retirement</option><option>Tax Saving</option><option>Home Purchase</option></select></label>
+            <label>Monthly SIP <span class="unit">₹</span><input name="Monthly_SIP" type="number" max="10000000" min="0" step="0.01" required /></label>
+            <label data-portfolio-field>Experience <span class="unit">years</span><input name="Investment_Experience_Years" type="number" min="0" max="82" step="0.5" required /></label>
+            <label data-portfolio-field>Financial literacy <small>1 beginner · 10 advanced</small><input name="Financial_Literacy_Score" type="number" min="1" max="10" required /></label>
+            <label data-portfolio-field>Risk comfort<select name="Risk_Tolerance_Level" required><option value="" disabled selected>Select an option</option><option>Low</option><option>Medium</option><option>High</option></select></label>
+            <label data-portfolio-field>Primary goal<select name="Primary_Financial_Goal" required><option value="" disabled selected>Select an option</option><option>Wealth Accumulation</option><option>Retirement</option><option>Tax Saving</option><option>Home Purchase</option></select></label>
           </div>
-          <div class="allocation-heading"><span>Portfolio allocation</span><span>Must total 100%</span></div>
+          <div id="portfolio-allocation" data-portfolio-field><div class="allocation-heading"><span>Portfolio allocation (%)</span><span id="allocation-status" class="allocation-status">Portfolio total: 0%</span></div>
           <div class="allocation-grid">
-            <label>Equity<input name="Equity_Allocation_Pct" type="number" min="0" max="100" step="0.1" value="70" required /></label>
-            <label>FDs<input name="FD_Allocation_Pct" type="number" min="0" max="100" step="0.1" value="10" required /></label>
-            <label>Debt assets<input name="Debt_Allocation_Pct" type="number" min="0" max="100" step="0.1" value="20" required /></label>
-          </div></fieldset>
-          <section class="live-profile" aria-live="polite" aria-label="Live profile summary">
-            <div class="live-profile-heading"><strong>Live profile check</strong><span id="allocation-status" class="allocation-status is-valid">Allocation totals 100%</span></div>
-            <div class="live-profile-grid">
-              <p><span>Balance before SIP</span><strong id="live-cashflow">₹0</strong></p>
-              <p><span>Balance after SIP</span><strong id="live-after-sip">₹0</strong></p>
-              <p><span>Expenses + debt / income</span><strong id="live-cost-ratio">0%</strong></p>
-              <p><span>SIP / income</span><strong id="live-sip-ratio">0%</strong></p>
+            <label>Equity<input aria-describedby="allocation-error" name="Equity_Allocation_Pct" type="number" min="0" max="100" step="0.1" required /></label>
+            <label>FDs<input name="FD_Allocation_Pct" type="number" min="0" max="100" step="0.1" required /></label>
+            <label>Debt assets<input name="Debt_Allocation_Pct" type="number" min="0" max="100" step="0.1" required /></label>
+          </div>
+          <p id="allocation-error" class="form-error" role="alert" hidden></p>
+          </div>
+          <section class="sebi-budget" aria-labelledby="sebi-budget-title">
+            <h3 id="sebi-budget-title">Where your monthly money goes</h3>
+            <p>Use the same scope for income and spending. Count rent and groceries as regular expenses, and dining out or gifts as other expenses. Enter 0 for unused categories.</p>
+            <div class="field-grid">
+              <label>Investments beyond SIP <span class="unit">₹</span><input name="Additional_Investment_INR" type="number" min="0" step="0.01" required /></label>
+              <label>Other expenses <span class="unit">₹</span><input name="Other_Expenses_INR" type="number" min="0" step="0.01" required /></label>
             </div>
-          </section>
+            <p id="sebi-budget-total" tabindex="-1" aria-live="polite">Enter your monthly income to start.</p>
+            <dl id="budget-breakdown" class="budget-breakdown" hidden></dl>
+          </section></fieldset>
           <p id="form-error" class="form-error" role="alert" hidden></p>
-          <button class="primary-button" type="submit"><span>Explore my segment</span><span aria-hidden="true">↗</span></button>
+          <button class="primary-button" type="submit"><span>Generate my report</span><span aria-hidden="true">↗</span></button>
           <p class="privacy-note">Your profile is used for this result and is not saved.</p>
         </form>
         <aside class="results-column">
-          <section id="result-card" class="panel result-card empty-result" aria-live="polite">
-            <p class="eyebrow">YOUR PROFILE ANALYSIS</p><div class="empty-mark">✳</div><h2>Ready when you are</h2><p>Complete the profile to see a detailed snapshot and comparison with a simulated investor group.</p>
+          <section class="budget-card" aria-labelledby="preview-heading">
+            <h2 id="preview-heading">Monthly budget</h2>
+            <div class="budget-visual">
+              <div class="budget-donut" aria-hidden="true"><div><strong id="ring-percent">—</strong><span>allocated</span></div></div>
+              <dl id="preview-legend" class="preview-legend"></dl>
+            </div>
+            <div class="budget-foot"><span>Monthly income</span><strong id="preview-income">—</strong></div>
           </section>
-          <section class="panel segment-panel"><div class="panel-heading compact-heading"><div><p class="eyebrow">THE MODEL</p><h2>Four simulated groups</h2></div></div><div id="segment-list" class="segment-list"><p class="loading">Loading segments…</p></div></section>
+          <section id="result-card" class="panel result-card empty-result" aria-live="polite">
+            <h2>Your report</h2>
+            <p>Complete your profile to see your simulated investor match and monthly budget comparison.</p>
+          </section>
+          <details class="panel segment-panel model-groups"><summary>Four simulated groups</summary><div id="segment-list" class="segment-list"><p class="loading">Loading segments…</p></div></details>
         </aside>
       </section>
-      <footer><span>SEGMENTIQ</span><span>Generated data · Exploratory only</span></footer>
     </main>
   </body>
 </html>
-

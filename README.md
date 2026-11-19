@@ -1,12 +1,16 @@
 # SegmentIQ
 
-SegmentIQ is an educational investor-profile segmentation demo. It turns a sample financial profile into a match against one of four **simulated** groups, using a reproducible synthetic dataset and an unsupervised K-Means pipeline.
+SegmentIQ produces one report from the original investor profile and five monthly budget shares calculated from the amounts entered in the form. The report shows the four-group synthetic model match alongside the three-group SEBI Investor Survey 2025 budget comparison. The survey group averages describe the holdout. Matches for new users are exploratory.
 
-> **Demo limitation:** the app currently uses generated scenario data, not verified observations from real investors. Its groups are not validated investor personas, its match is not a probability or risk assessment, and it does not provide financial advice. Submitted profiles are used for the response and are not saved.
+Enter regular expenses, loan repayments, savings, SIP, other investments, and other expenses once. The monthly budget must reconcile to the entered income. The form submits both inputs to `POST /report`, which checks that the overlapping fields agree and that the investment share covers the SIP. Selecting **No current portfolio** sends a budget-only request with `profile: null`. `/predict` serves the synthetic model. `/sebi/predict` uses the five budget shares and accepts the legacy `holdings` field for compatibility.
+
+The bundled SEBI model uses the five budget fields in this order: monthly expenses, savings, loan repayments, investment, and other expenses. It applies a square-root transform to each fraction before comparing against the fitted K-means centers. The model file records the workbook hash, seed, training size, and holdout summaries. The raw survey workbook is kept outside the app. SEBI defines the budget question at the household level. The bundled comparison groups were fitted on eligible investor-sample interviews, so budget-only users are compared with that reference sample. Model applicability to households without a portfolio has not been established.
 
 [![Python 3.13](https://img.shields.io/badge/Python-3.13-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/API-FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![scikit--learn](https://img.shields.io/badge/ML-scikit--learn-F7931E?logo=scikitlearn&logoColor=white)](https://scikit-learn.org/)
+
+The synthetic generator calculates savings after regular expenses, loan repayments, SIP, and other expenses. The regenerated 1,600 budgets reconcile to income. The corrected run selected four clusters (mean silhouette 0.3061, mean seed stability ARI 1.0000). All 1,600 assignments matched the previous run after aligning cluster IDs.
 
 ## Demo
 
